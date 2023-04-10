@@ -12,7 +12,6 @@ import HexService from "./services/HexService";
 function App() {
   const [hexGrid, setHexGrid] = React.useState<hexagonNodeGrid>(
     new hexagonNodeGrid(47, 19, 30)
-    //new hexagonNodeGrid(3, 3)
   );
   const [startHex, setStartHex] = React.useState<hexNode | undefined>(
     undefined
@@ -23,9 +22,9 @@ function App() {
   );
 
   const cellStyle = {
-    fill: COLORS.orange[0],
-    stroke: COLORS.orange[1],
-    strokeWidth: 0.0,
+    // fill: COLORS.orange[0],
+    // stroke: COLORS.orange[1],
+    // strokeWidth: 0.0,
   };
 
   React.useEffect(() => {
@@ -40,7 +39,7 @@ function App() {
       const aStarAlg = new aStar(
         startHex,
         endHex,
-        (a, b) => HexService.distance(a as hexNode, b as hexNode),
+        (c, n) => (n as hexNode).movementCost ?? 1,
         (a, b) => HexService.distance(a as hexNode, b as hexNode)
       );
       const res = aStarAlg.run() as hexNode[];
@@ -62,57 +61,69 @@ function App() {
             origin={{ x: 0, y: 0 }}
           >
             <>
-              {hexGrid.hexNodes.map(hex => (
-                <Hexagon
-                  key={hex.getId()}
-                  q={hex.q}
-                  r={hex.r}
-                  s={hex.s}
-                  cellStyle={{
-                    ...cellStyle,
-                    fill: HexService.equals(startHex, hex)
-                      ? COLORS.green[3]
-                      : HexService.equals(endHex, hex)
-                      ? COLORS.red[3]
-                      : foundPath?.find(x => HexService.equals(x, hex))
-                      ? COLORS.blue[3]
-                      : hex.blocked
-                      ? COLORS.dark[1]
-                      : cellStyle.fill,
-                  }}
-                  onClick={() => {
-                    if (HexService.equals(startHex, hex)) {
-                      setStartHex(undefined);
-                    } else if (
-                      !hex.blocked &&
-                      startHex === undefined &&
-                      !HexService.equals(endHex, hex)
-                    ) {
-                      setStartHex(hex);
-                    } else if (HexService.equals(endHex, hex)) {
-                      setEndHex(undefined);
-                    } else if (
-                      !hex.blocked &&
-                      endHex === undefined &&
-                      !HexService.equals(startHex, hex)
-                    ) {
-                      setEndHex(hex);
-                    }
-                  }}
-                  // onCtrlMouseClick={() => {
-                  //   // setHexGrid(grid => ({
-                  //   //   ...grid,
-                  //   //   hexagons: grid.hexNodes.map(x => {
-                  //   //     return x.getId() === hex.getId()
-                  //   //       ? new hexagon(x.q, x.r, x.s, !x.blocked)
-                  //   //       : x;
-                  //   //   }) as hexagon[],
-                  //   // }));
-                  // }}
-                >
-                  {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
-                </Hexagon>
-              ))}
+              {hexGrid.hexNodes.map(hex => {
+                const isPath =
+                  foundPath?.find(x => HexService.equals(x, hex)) !== undefined;
+                return (
+                  <Hexagon
+                    key={hex.getId()}
+                    q={hex.q}
+                    r={hex.r}
+                    s={hex.s}
+                    cellStyle={{
+                      ...cellStyle,
+                      fill: HexService.equals(startHex, hex)
+                        ? COLORS.green[9]
+                        : HexService.equals(endHex, hex)
+                        ? COLORS.red[9]
+                        : hex.terrainType === "Water"
+                        ? COLORS.blue[6]
+                        : hex.terrainType === "Mountain"
+                        ? COLORS.gray[3]
+                        : hex.terrainType === "Hills"
+                        ? COLORS.orange[3]
+                        : hex.terrainType === "RiverPlains"
+                        ? COLORS.green[2]
+                        : hex.terrainType === "Plains"
+                        ? COLORS.green[5]
+                        : COLORS.dark[9],
+                      stroke: isPath ? COLORS.blue[9] : undefined,
+                      strokeWidth: isPath ? 2 : 0,
+                    }}
+                    onClick={() => {
+                      if (HexService.equals(startHex, hex)) {
+                        setStartHex(undefined);
+                      } else if (
+                        !hex.blocked &&
+                        startHex === undefined &&
+                        !HexService.equals(endHex, hex)
+                      ) {
+                        setStartHex(hex);
+                      } else if (HexService.equals(endHex, hex)) {
+                        setEndHex(undefined);
+                      } else if (
+                        !hex.blocked &&
+                        endHex === undefined &&
+                        !HexService.equals(startHex, hex)
+                      ) {
+                        setEndHex(hex);
+                      }
+                    }}
+                    // onCtrlMouseClick={() => {
+                    //   // setHexGrid(grid => ({
+                    //   //   ...grid,
+                    //   //   hexagons: grid.hexNodes.map(x => {
+                    //   //     return x.getId() === hex.getId()
+                    //   //       ? new hexagon(x.q, x.r, x.s, !x.blocked)
+                    //   //       : x;
+                    //   //   }) as hexagon[],
+                    //   // }));
+                    // }}
+                  >
+                    {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
+                  </Hexagon>
+                );
+              })}
             </>
           </Layout>
         </HexGrid>

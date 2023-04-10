@@ -13,18 +13,18 @@ export class aStar {
   closedList: node[] = [];
   startNode: node;
   endNode: node;
-  distance: (a: node, b: node) => number;
+  gToNeighbor: (current: node, neighbor: node) => number;
   heuristic: (a: node, b: node) => number;
 
   constructor(
     startNode: node,
     endNode: node,
-    distance: (a: node, b: node) => number,
+    gToNeighbor: (a: node, b: node) => number,
     heuristic: (a: node, b: node) => number
   ) {
     this.startNode = startNode;
     this.endNode = endNode;
-    this.distance = distance;
+    this.gToNeighbor = gToNeighbor;
     this.heuristic = heuristic;
   }
 
@@ -83,7 +83,7 @@ export class aStar {
       }
       // g-Wert für den neuen Weg berechnen: g-Wert des Vorgängers plus
       // die Kosten der gerade benutzten Kante
-      const g = current.g + this.distance(current, neighbor);
+      const g = current.g + this.gToNeighbor(current, neighbor);
       // wenn der Nachfolgeknoten bereits auf der Open List ist,
       // aber der neue Weg nicht besser ist als der alte – tue nichts
       if (this.openList.indexOf(neighbor) > -1 && g >= neighbor.g) {
