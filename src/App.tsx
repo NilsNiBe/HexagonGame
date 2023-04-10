@@ -44,7 +44,6 @@ function App() {
         (a, b) => HexService.distance(a as hexNode, b as hexNode)
       );
       const res = aStarAlg.run() as hexNode[];
-      console.log("path", res);
       setFoundPath(res);
     } else {
       setFoundPath(undefined);

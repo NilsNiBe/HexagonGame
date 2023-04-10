@@ -1,5 +1,3 @@
-import { hexNode } from "../models/hexNode";
-
 export interface node {
   f: number;
   g: number;
@@ -37,30 +35,12 @@ export class aStar {
     // diese Schleife wird durchlaufen bis entweder
     // - die optimale Lösung gefunden wurde oder
     // - feststeht, dass keine Lösung existiert
-    let runs = 0;
     while (this.openList.length > 0) {
-      runs++;
-      console.log(runs);
-
       // Knoten mit dem geringsten f-Wert aus der Open List entfernen
       let current = this.openList.reduce((r, e) => (r.f < e.f ? r : e));
-      console.log(
-        "current",
-        "q:",
-        (current as hexNode).q,
-        "r:",
-        (current as hexNode).r,
-        "f:",
-        current.f,
-        "g:",
-        current.g,
-        "h:",
-        current.h
-      );
       this.openList.splice(this.openList.indexOf(current), 1);
       // Wurde das Ziel gefunden?
       if (this.endNode.equals(current)) {
-        console.log(runs);
         return this.pathFound();
       }
       // Der aktuelle Knoten soll durch nachfolgende Funktionen

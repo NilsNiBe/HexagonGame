@@ -1,6 +1,6 @@
 {
   "name": "hexagon-game",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "homepage": "https://nilsnibe.github.io/hexagongame",
   "type": "module",
   "scripts": {
