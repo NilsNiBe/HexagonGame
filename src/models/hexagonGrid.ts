@@ -23,13 +23,13 @@ export class hexagonNodeGrid {
         movementCost = Number.MAX_VALUE;
       } else if (0.3 < random && random < 0.4) {
         terrainType = "Mountain";
-        movementCost = 4;
+        movementCost = 10;
       } else if (0.4 < random && random < 0.5) {
         terrainType = "Hills";
-        movementCost = 3;
+        movementCost = 7;
       } else if (0.5 < random && random < 0.7) {
         terrainType = "RiverPlains";
-        movementCost = 2;
+        movementCost = 4;
       }
 
       return new hexNode(
