@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import * as React from "react";
 import { COLORS } from "../assets/colors";
+import soldier from "../assets/soldier.svg";
 import hexagon from "../models/hexagon";
 import point from "../models/point";
 import { HexService } from "../services/HexService";
@@ -195,7 +196,27 @@ export function Hexagon(
       }}
     >
       <g className="hexagon">
+        {/* <defs>
+          <pattern id="imgpattern" x="0" y="0" width="10" height="10">
+            <image
+              width="4%"
+              height="7%"
+              x="-7"
+              y="-10"
+              preserveAspectRatio="none"
+              href={soldier}
+            />
+          </pattern>
+        </defs> */}
         <polygon points={points} fill={fillId} style={cellStyleModified} />
+        <image
+          width="3%"
+          height="6%"
+          x={-22}
+          y={-25}
+          preserveAspectRatio="none"
+          href={soldier}
+        />
         {children}
       </g>
     </g>

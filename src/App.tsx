@@ -124,7 +124,6 @@ function App() {
                         : COLORS.dark[9],
                       stroke: isPath ? COLORS.blue[9] : undefined,
                       opacity: isReachable ? 1 : 0.3,
-
                       strokeWidth: isPath ? 2 : 0,
                     }}
                     onClick={() => {
