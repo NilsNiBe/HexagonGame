@@ -7,6 +7,7 @@ import Layout from "./components/Layout";
 import { hexagonNodeGrid } from "./models/hexagonGrid";
 import { hexNode } from "./models/hexNode";
 import { aStar } from "./services/aStarService";
+import { DijkstraProps, runDijkstra } from "./services/Dijkstra";
 import HexService from "./services/HexService";
 
 function App() {
@@ -21,11 +22,43 @@ function App() {
     undefined
   );
 
+  const [reachable, setReachable] = React.useState<hexNode[] | undefined>(
+    undefined
+  );
+
   const cellStyle = {
     // fill: COLORS.orange[0],
     // stroke: COLORS.orange[1],
     // strokeWidth: 0.0,
   };
+
+  React.useEffect(() => {
+    if (startHex != undefined) {
+      const graph: DijkstraProps = {
+        startindex: hexGrid.hexNodes.indexOf(startHex),
+        graph: hexGrid.hexNodes.map(x => ({
+          neighborIndexes: x.neighborIndexes,
+          weight: x.blocked
+            ? Number.MAX_VALUE
+            : x.movementCost ?? Number.MAX_VALUE,
+          id: x.getId(),
+        })),
+        maxCost: 12,
+      };
+
+      const res = runDijkstra(graph);
+      const found: hexNode[] = [];
+      res
+        .filter(x => x.cost < Number.MAX_VALUE)
+        .forEach(x => {
+          const foo = hexGrid.hexNodes.find(h => h.getId() === x.id)!;
+          found.push(foo);
+        });
+      setReachable(found);
+    } else {
+      setReachable(undefined);
+    }
+  }, [startHex]);
 
   React.useEffect(() => {
     if (startHex !== undefined && endHex !== undefined) {
@@ -64,6 +97,8 @@ function App() {
               {hexGrid.hexNodes.map(hex => {
                 const isPath =
                   foundPath?.find(x => HexService.equals(x, hex)) !== undefined;
+                const isReachable =
+                  reachable?.find(x => HexService.equals(x, hex)) !== undefined;
                 return (
                   <Hexagon
                     key={hex.getId()}
@@ -88,6 +123,8 @@ function App() {
                         ? COLORS.green[5]
                         : COLORS.dark[9],
                       stroke: isPath ? COLORS.blue[9] : undefined,
+                      opacity: isReachable ? 1 : 0.3,
+
                       strokeWidth: isPath ? 2 : 0,
                     }}
                     onClick={() => {

@@ -16,19 +16,19 @@ export function Coordinates({
     <>
       <Text
         transform={`translate(${0}, ${-8})`}
-        style={{ ...fontStyle, fill: COLORS.red[8] }}
+        style={{ ...fontStyle, fill: COLORS.dark[9] }} //COLORS.red[8]
       >
         {q}
       </Text>
       <Text
         transform={`translate(${-8}, ${4})`}
-        style={{ ...fontStyle, fill: COLORS.green[8] }}
+        style={{ ...fontStyle, fill: COLORS.dark[9] }} //COLORS.green[8]
       >
         {s}
       </Text>
       <Text
         transform={`translate(${8}, ${4})`}
-        style={{ ...fontStyle, fill: COLORS.blue[8] }}
+        style={{ ...fontStyle, fill: COLORS.dark[9] }} //COLORS.blue[8]
       >
         {r}
       </Text>

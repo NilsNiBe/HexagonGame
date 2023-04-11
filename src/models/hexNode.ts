@@ -7,7 +7,9 @@ export class hexNode extends hexagon implements node {
   public f: number;
   public g: number;
   public h?: number;
+  // obsolete
   neighbors: node[];
+  neighborIndexes: number[];
   predecessor?: node;
   movementCost?: number;
   terrainType?: TerrainType;
@@ -23,6 +25,7 @@ export class hexNode extends hexagon implements node {
     g?: number,
     h?: number,
     neighbors?: node[],
+    neighborIndexes?: number[],
     predecessor?: node
   ) {
     super(q, r, s, blocked);
@@ -30,6 +33,7 @@ export class hexNode extends hexagon implements node {
     this.g = g ?? 0;
     this.h = h;
     this.neighbors = neighbors ?? [];
+    this.neighborIndexes = neighborIndexes ?? [];
     this.predecessor = predecessor;
     this.movementCost = movementCost;
     this.terrainType = terrainType;

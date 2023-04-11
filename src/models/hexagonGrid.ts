@@ -49,14 +49,15 @@ export class hexagonNodeGrid {
       const potentialNeighbors = HexService.neighbors(x);
       for (let i = 0; i < potentialNeighbors.length; i++) {
         const neighbor = potentialNeighbors[i];
-        const hexNodesNeighbor = hexNodes.find(
+        const hexNodesNeighborIndex = hexNodes.findIndex(
           node =>
             node.q === neighbor.q &&
             node.r === neighbor.r &&
             node.s === neighbor.s
         );
-        if (hexNodesNeighbor !== undefined) {
-          x.neighbors.push(hexNodesNeighbor);
+        if (hexNodesNeighborIndex > -1) {
+          x.neighbors.push(hexNodes[hexNodesNeighborIndex]);
+          x.neighborIndexes.push(hexNodesNeighborIndex);
         }
       }
     });
