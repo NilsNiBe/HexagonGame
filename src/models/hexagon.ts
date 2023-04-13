@@ -21,7 +21,6 @@ export class hexagon implements hexCoordinates {
 
   blocked: boolean;
   text?: string;
-  image?: string;
   props?: Partial<hexPropsType>;
 
   constructor(q: number, r: number, s: number, blocked?: boolean) {

@@ -1,7 +1,8 @@
 import { node } from "../services/aStarService";
 import HexService from "../services/HexService";
 import hexagon from "./hexagon";
-import { TerrainType, Unit } from "./hexagonGrid";
+import { Terrain } from "./terrain/Terrain";
+import { Unit } from "./units/Unit";
 
 export class hexNode extends hexagon implements node {
   public f: number;
@@ -12,7 +13,7 @@ export class hexNode extends hexagon implements node {
   neighborIndexes: number[];
   predecessor?: node;
   movementCost?: number;
-  terrainType?: TerrainType;
+  terrain?: Terrain;
   unit?: Unit;
 
   constructor(
@@ -21,7 +22,7 @@ export class hexNode extends hexagon implements node {
     s: number,
     blocked?: boolean,
     movementCost?: number,
-    terrainType?: TerrainType,
+    terrain?: Terrain,
     unit?: Unit,
     f?: number,
     g?: number,
@@ -38,7 +39,7 @@ export class hexNode extends hexagon implements node {
     this.neighborIndexes = neighborIndexes ?? [];
     this.predecessor = predecessor;
     this.movementCost = movementCost;
-    this.terrainType = terrainType;
+    this.terrain = terrain;
     this.unit = unit;
   }
 

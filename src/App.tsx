@@ -1,18 +1,5 @@
 import React from "react";
 import "./App.css";
-import {
-  CavalrySvg,
-  EliteInfantrySvg,
-  ForestSvg,
-  HeavyArtillerySvg,
-  InfantrySvg,
-  LightArtillerySvg,
-  MediumArtillerySvg,
-  MountainSvg,
-  PlainsSvg,
-  StreetSvg,
-  WaterSvg,
-} from "./assets";
 import { COLORS } from "./assets/colors";
 import Hexagon from "./components/Hexagon";
 import HexGrid from "./components/HexGrid";
@@ -125,15 +112,15 @@ function App() {
                     cellStyle={{
                       ...cellStyle,
                       fill:
-                        hex.terrainType === "Water"
+                        hex.terrain?.type === "Water"
                           ? COLORS.blue[5]
-                          : hex.terrainType === "Mountain"
+                          : hex.terrain?.type === "Mountain"
                           ? COLORS.gray[3]
-                          : hex.terrainType === "Street"
+                          : hex.terrain?.type === "Street"
                           ? COLORS.gray[5]
-                          : hex.terrainType === "Forrest"
+                          : hex.terrain?.type === "Forrest"
                           ? COLORS.green[2]
-                          : hex.terrainType === "Plains"
+                          : hex.terrain?.type === "Plains"
                           ? COLORS.green[5]
                           : COLORS.dark[9],
                       stroke: HexService.equals(startHex, hex)
@@ -170,26 +157,14 @@ function App() {
                     }}
                   >
                     <>
-                      {hex.terrainType && (
+                      {hex.terrain && (
                         <image
                           width="2.5%"
                           height="5%"
                           x={-23}
                           y={-20}
                           preserveAspectRatio="none"
-                          href={
-                            hex.terrainType === "Street"
-                              ? StreetSvg
-                              : hex.terrainType === "Plains"
-                              ? PlainsSvg
-                              : hex.terrainType === "Forrest"
-                              ? ForestSvg
-                              : hex.terrainType === "Mountain"
-                              ? MountainSvg
-                              : hex.terrainType === "Water"
-                              ? WaterSvg
-                              : undefined
-                          }
+                          href={hex.terrain.image ?? undefined}
                         />
                       )}
                       {hex.unit && (
@@ -199,21 +174,7 @@ function App() {
                           x={-20}
                           y={-20}
                           preserveAspectRatio="none"
-                          href={
-                            hex.unit === "infantry"
-                              ? InfantrySvg
-                              : hex.unit === "elite-infantry"
-                              ? EliteInfantrySvg
-                              : hex.unit === "cavalry"
-                              ? CavalrySvg
-                              : hex.unit === "light-artillery"
-                              ? LightArtillerySvg
-                              : hex.unit === "medium-artillery"
-                              ? MediumArtillerySvg
-                              : hex.unit === "heavy-artillery"
-                              ? HeavyArtillerySvg
-                              : undefined
-                          }
+                          href={hex.unit.image ?? undefined}
                         />
                       )}
                     </>

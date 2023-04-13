@@ -11,16 +11,21 @@ import PlainsSvg from "../assets/terrain/plains.svg";
 import StreetSvg from "../assets/terrain/street.svg";
 import WaterSvg from "../assets/terrain/water.svg";
 
-export {
-  InfantrySvg,
-  EliteInfantrySvg,
-  CavalrySvg,
-  LightArtillerySvg,
-  MediumArtillerySvg,
-  HeavyArtillerySvg,
+const UnitSvg = {
+  InfantrySvg: InfantrySvg,
+  EliteInfantrySvg: EliteInfantrySvg,
+  CavalrySvg: CavalrySvg,
+  LightArtillerySvg: LightArtillerySvg,
+  MediumArtillerySvg: MediumArtillerySvg,
+  HeavyArtillerySvg: HeavyArtillerySvg,
+};
+
+const TerrainSvg = {
   StreetSvg,
   PlainsSvg,
   ForestSvg,
   MountainSvg,
   WaterSvg,
 };
+
+export { UnitSvg, TerrainSvg };
