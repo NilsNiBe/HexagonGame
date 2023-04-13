@@ -3,11 +3,11 @@ import HexService from "../services/HexService";
 import { hexNode } from "./hexNode";
 
 export type TerrainType =
-  | "Water"
+  | "Street"
+  | "Plains"
+  | "Forrest"
   | "Mountain"
-  | "Hills"
-  | "RiverPlains"
-  | "Plains";
+  | "Water";
 
 export type Unit =
   | "infantry"
@@ -25,19 +25,19 @@ export class hexagonNodeGrid {
     const hexNodes = hexagons.map(x => {
       const random = Math.random();
       let terrainType: TerrainType = "Plains";
-      let movementCost: number = 1;
+      let movementCost: number = 2;
       if (random < 0.3) {
         terrainType = "Water";
         movementCost = Number.MAX_VALUE;
       } else if (0.3 < random && random < 0.4) {
         terrainType = "Mountain";
-        movementCost = 10;
-      } else if (0.4 < random && random < 0.5) {
-        terrainType = "Hills";
-        movementCost = 7;
-      } else if (0.5 < random && random < 0.7) {
-        terrainType = "RiverPlains";
+        movementCost = 8;
+      } else if (0.5 < random && random < 0.6) {
+        terrainType = "Forrest";
         movementCost = 4;
+      } else if (0.6 < random && random < 0.7) {
+        terrainType = "Street";
+        movementCost = 1;
       }
       let unit: Unit | undefined = undefined;
       if (movementCost < Number.MAX_VALUE) {

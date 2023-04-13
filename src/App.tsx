@@ -1,12 +1,19 @@
 import React from "react";
 import "./App.css";
-import cavalry from "./assets/cavalry.svg";
+import {
+  CavalrySvg,
+  EliteInfantrySvg,
+  ForestSvg,
+  HeavyArtillerySvg,
+  InfantrySvg,
+  LightArtillerySvg,
+  MediumArtillerySvg,
+  MountainSvg,
+  PlainsSvg,
+  StreetSvg,
+  WaterSvg,
+} from "./assets";
 import { COLORS } from "./assets/colors";
-import eliteInfantry from "./assets/elite-infantry.svg";
-import heavyArtillery from "./assets/heavy-artillery.svg";
-import infantry from "./assets/infantry.svg";
-import lightArtillery from "./assets/light-artillery.svg";
-import mediumArtillery from "./assets/medium-artillery.svg";
 import Hexagon from "./components/Hexagon";
 import HexGrid from "./components/HexGrid";
 import Layout from "./components/Layout";
@@ -122,9 +129,9 @@ function App() {
                           ? COLORS.blue[5]
                           : hex.terrainType === "Mountain"
                           ? COLORS.gray[3]
-                          : hex.terrainType === "Hills"
-                          ? COLORS.orange[3]
-                          : hex.terrainType === "RiverPlains"
+                          : hex.terrainType === "Street"
+                          ? COLORS.gray[5]
+                          : hex.terrainType === "Forrest"
                           ? COLORS.green[2]
                           : hex.terrainType === "Plains"
                           ? COLORS.green[5]
@@ -162,31 +169,54 @@ function App() {
                       }
                     }}
                   >
-                    {hex.unit && (
-                      <image
-                        width="2.5%"
-                        height="5%"
-                        x={-20}
-                        y={-20}
-                        preserveAspectRatio="none"
-                        href={
-                          hex.unit === "infantry"
-                            ? infantry
-                            : hex.unit === "elite-infantry"
-                            ? eliteInfantry
-                            : hex.unit === "cavalry"
-                            ? cavalry
-                            : hex.unit === "light-artillery"
-                            ? lightArtillery
-                            : hex.unit === "medium-artillery"
-                            ? mediumArtillery
-                            : hex.unit === "heavy-artillery"
-                            ? heavyArtillery
-                            : undefined
-                        }
-                      />
-                    )}
-
+                    <>
+                      {hex.terrainType && (
+                        <image
+                          width="2.5%"
+                          height="5%"
+                          x={-23}
+                          y={-20}
+                          preserveAspectRatio="none"
+                          href={
+                            hex.terrainType === "Street"
+                              ? StreetSvg
+                              : hex.terrainType === "Plains"
+                              ? PlainsSvg
+                              : hex.terrainType === "Forrest"
+                              ? ForestSvg
+                              : hex.terrainType === "Mountain"
+                              ? MountainSvg
+                              : hex.terrainType === "Water"
+                              ? WaterSvg
+                              : undefined
+                          }
+                        />
+                      )}
+                      {hex.unit && (
+                        <image
+                          width="2.5%"
+                          height="5%"
+                          x={-20}
+                          y={-20}
+                          preserveAspectRatio="none"
+                          href={
+                            hex.unit === "infantry"
+                              ? InfantrySvg
+                              : hex.unit === "elite-infantry"
+                              ? EliteInfantrySvg
+                              : hex.unit === "cavalry"
+                              ? CavalrySvg
+                              : hex.unit === "light-artillery"
+                              ? LightArtillerySvg
+                              : hex.unit === "medium-artillery"
+                              ? MediumArtillerySvg
+                              : hex.unit === "heavy-artillery"
+                              ? HeavyArtillerySvg
+                              : undefined
+                          }
+                        />
+                      )}
+                    </>
                     {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
                   </Hexagon>
                 );
