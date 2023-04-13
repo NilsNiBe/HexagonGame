@@ -1,6 +1,12 @@
 import React from "react";
 import "./App.css";
+import cavalry from "./assets/cavalry.svg";
 import { COLORS } from "./assets/colors";
+import eliteInfantry from "./assets/elite-infantry.svg";
+import heavyArtillery from "./assets/heavy-artillery.svg";
+import infantry from "./assets/infantry.svg";
+import lightArtillery from "./assets/light-artillery.svg";
+import mediumArtillery from "./assets/medium-artillery.svg";
 import Hexagon from "./components/Hexagon";
 import HexGrid from "./components/HexGrid";
 import Layout from "./components/Layout";
@@ -43,7 +49,7 @@ function App() {
             : x.movementCost ?? Number.MAX_VALUE,
           id: x.getId(),
         })),
-        maxCost: 12,
+        maxCost: 10,
       };
 
       const res = runDijkstra(graph);
@@ -98,7 +104,11 @@ function App() {
                 const isPath =
                   foundPath?.find(x => HexService.equals(x, hex)) !== undefined;
                 const isReachable =
-                  reachable?.find(x => HexService.equals(x, hex)) !== undefined;
+                  reachable === undefined
+                    ? true
+                    : reachable?.find(x => HexService.equals(x, hex)) !==
+                      undefined;
+
                 return (
                   <Hexagon
                     key={hex.getId()}
@@ -107,55 +117,76 @@ function App() {
                     s={hex.s}
                     cellStyle={{
                       ...cellStyle,
-                      fill: HexService.equals(startHex, hex)
-                        ? COLORS.green[9]
-                        : HexService.equals(endHex, hex)
-                        ? COLORS.red[9]
-                        : hex.terrainType === "Water"
-                        ? COLORS.blue[6]
-                        : hex.terrainType === "Mountain"
-                        ? COLORS.gray[3]
-                        : hex.terrainType === "Hills"
-                        ? COLORS.orange[3]
-                        : hex.terrainType === "RiverPlains"
-                        ? COLORS.green[2]
-                        : hex.terrainType === "Plains"
-                        ? COLORS.green[5]
-                        : COLORS.dark[9],
-                      stroke: isPath ? COLORS.blue[9] : undefined,
-                      opacity: isReachable ? 1 : 0.3,
-                      strokeWidth: isPath ? 2 : 0,
+                      fill:
+                        hex.terrainType === "Water"
+                          ? COLORS.blue[5]
+                          : hex.terrainType === "Mountain"
+                          ? COLORS.gray[3]
+                          : hex.terrainType === "Hills"
+                          ? COLORS.orange[3]
+                          : hex.terrainType === "RiverPlains"
+                          ? COLORS.green[2]
+                          : hex.terrainType === "Plains"
+                          ? COLORS.green[5]
+                          : COLORS.dark[9],
+                      stroke: HexService.equals(startHex, hex)
+                        ? COLORS.dark[9]
+                        : isPath
+                        ? COLORS.blue[9]
+                        : undefined,
+                      opacity: isReachable ? 1 : 0.4,
+                      strokeWidth:
+                        hex.blocked || hex.movementCost === Number.MAX_VALUE
+                          ? 0
+                          : HexService.equals(startHex, hex)
+                          ? 5
+                          : isPath
+                          ? 5
+                          : 0,
                     }}
                     onClick={() => {
                       if (HexService.equals(startHex, hex)) {
                         setStartHex(undefined);
-                      } else if (
-                        !hex.blocked &&
-                        startHex === undefined &&
-                        !HexService.equals(endHex, hex)
-                      ) {
+                      } else if (!hex.blocked) {
                         setStartHex(hex);
-                      } else if (HexService.equals(endHex, hex)) {
-                        setEndHex(undefined);
-                      } else if (
-                        !hex.blocked &&
-                        endHex === undefined &&
-                        !HexService.equals(startHex, hex)
+                      }
+                    }}
+                    onMouseEnter={() => {
+                      if (
+                        hex.blocked ||
+                        hex.movementCost === Number.MAX_VALUE
                       ) {
+                        setEndHex(undefined);
+                      } else {
                         setEndHex(hex);
                       }
                     }}
-                    // onCtrlMouseClick={() => {
-                    //   // setHexGrid(grid => ({
-                    //   //   ...grid,
-                    //   //   hexagons: grid.hexNodes.map(x => {
-                    //   //     return x.getId() === hex.getId()
-                    //   //       ? new hexagon(x.q, x.r, x.s, !x.blocked)
-                    //   //       : x;
-                    //   //   }) as hexagon[],
-                    //   // }));
-                    // }}
                   >
+                    {hex.unit && (
+                      <image
+                        width="2.5%"
+                        height="5%"
+                        x={-20}
+                        y={-20}
+                        preserveAspectRatio="none"
+                        href={
+                          hex.unit === "infantry"
+                            ? infantry
+                            : hex.unit === "elite-infantry"
+                            ? eliteInfantry
+                            : hex.unit === "cavalry"
+                            ? cavalry
+                            : hex.unit === "light-artillery"
+                            ? lightArtillery
+                            : hex.unit === "medium-artillery"
+                            ? mediumArtillery
+                            : hex.unit === "heavy-artillery"
+                            ? heavyArtillery
+                            : undefined
+                        }
+                      />
+                    )}
+
                     {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
                   </Hexagon>
                 );

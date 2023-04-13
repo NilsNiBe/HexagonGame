@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import * as React from "react";
 import { COLORS } from "../assets/colors";
-import soldier from "../assets/soldier.svg";
 import hexagon from "../models/hexagon";
 import point from "../models/point";
 import { HexService } from "../services/HexService";
@@ -117,7 +116,7 @@ export function Hexagon(
   const cellStyleModified = {
     ...cellStyle,
     stroke: isMouseOver ? COLORS.red[5] : cellStyle?.stroke,
-    strokeWidth: isMouseOver ? "1px" : cellStyle?.strokeWidth,
+    strokeWidth: isMouseOver ? "5" : cellStyle?.strokeWidth,
   };
 
   const buildWall = (e: React.MouseEvent<SVGGElement>) => {
@@ -209,14 +208,7 @@ export function Hexagon(
           </pattern>
         </defs> */}
         <polygon points={points} fill={fillId} style={cellStyleModified} />
-        <image
-          width="3%"
-          height="6%"
-          x={-22}
-          y={-25}
-          preserveAspectRatio="none"
-          href={soldier}
-        />
+
         {children}
       </g>
     </g>

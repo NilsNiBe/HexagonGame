@@ -9,6 +9,14 @@ export type TerrainType =
   | "RiverPlains"
   | "Plains";
 
+export type Unit =
+  | "infantry"
+  | "elite-infantry"
+  | "cavalry"
+  | "light-artillery"
+  | "medium-artillery"
+  | "heavy-artillery";
+
 export class hexagonNodeGrid {
   hexNodes: hexNode[];
 
@@ -31,6 +39,23 @@ export class hexagonNodeGrid {
         terrainType = "RiverPlains";
         movementCost = 4;
       }
+      let unit: Unit | undefined = undefined;
+      if (movementCost < Number.MAX_VALUE) {
+        const r = Math.random();
+        if (r < 0.05) {
+          unit = "infantry";
+        } else if (r < 0.1) {
+          unit = "elite-infantry";
+        } else if (0.1 < r && r < 0.15) {
+          unit = "cavalry";
+        } else if (0.15 < r && r < 0.2) {
+          unit = "light-artillery";
+        } else if (0.2 < r && r < 0.25) {
+          unit = "medium-artillery";
+        } else if (0.25 < r && r < 0.3) {
+          unit = "heavy-artillery";
+        }
+      }
 
       return new hexNode(
         x.q,
@@ -41,6 +66,7 @@ export class hexagonNodeGrid {
         terrainType === "Water",
         movementCost,
         terrainType,
+        unit,
         0,
         0
       );
