@@ -6,7 +6,7 @@ import HexGrid from "./components/HexGrid";
 import Layout from "./components/Layout";
 import { HexagonNodeGrid } from "./models/HexagonGrid";
 import { HexNode } from "./models/HexNode";
-import { aStar } from "./services/aStarService";
+import { runAStar } from "./services/aStarService";
 import { runDijkstra } from "./services/Dijkstra";
 import { distance, equals } from "./services/HexService";
 
@@ -55,13 +55,8 @@ function App() {
         x.predecessor = undefined;
       });
 
-      const aStarAlg = new aStar(
-        startHex,
-        endHex,
-        (c, n) => (n as HexNode).weight ?? 1,
-        (a, b) => distance(a as HexNode, b as HexNode)
-      );
-      const res = aStarAlg.run() as HexNode[];
+      const res = runAStar(startHex, endHex, (c, n) => n.weight ?? 1, distance);
+
       setFoundPath(res);
     } else {
       setFoundPath(undefined);
