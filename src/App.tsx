@@ -4,25 +4,25 @@ import { COLORS } from "./assets/colors";
 import Hexagon from "./components/Hexagon";
 import HexGrid from "./components/HexGrid";
 import Layout from "./components/Layout";
-import { hexagonNodeGrid } from "./models/hexagonGrid";
-import { hexNode } from "./models/hexNode";
+import { HexagonNodeGrid } from "./models/HexagonGrid";
+import { HexNode } from "./models/HexNode";
 import { aStar } from "./services/aStarService";
-import { DijkstraProps, runDijkstra } from "./services/Dijkstra";
-import HexService from "./services/HexService";
+import { runDijkstra } from "./services/Dijkstra";
+import { distance, equals } from "./services/HexService";
 
 function App() {
-  const [hexGrid, setHexGrid] = React.useState<hexagonNodeGrid>(
-    new hexagonNodeGrid(47, 19, 30)
+  const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
+    new HexagonNodeGrid(47, 19, 30)
   );
-  const [startHex, setStartHex] = React.useState<hexNode | undefined>(
+  const [startHex, setStartHex] = React.useState<HexNode | undefined>(
     undefined
   );
-  const [endHex, setEndHex] = React.useState<hexNode | undefined>(undefined);
-  const [foundPath, setFoundPath] = React.useState<hexNode[] | undefined>(
+  const [endHex, setEndHex] = React.useState<HexNode | undefined>(undefined);
+  const [foundPath, setFoundPath] = React.useState<HexNode[] | undefined>(
     undefined
   );
 
-  const [reachable, setReachable] = React.useState<hexNode[] | undefined>(
+  const [reachable, setReachable] = React.useState<HexNode[] | undefined>(
     undefined
   );
 
@@ -34,27 +34,13 @@ function App() {
 
   React.useEffect(() => {
     if (startHex != undefined) {
-      const graph: DijkstraProps = {
-        startindex: hexGrid.hexNodes.indexOf(startHex),
-        graph: hexGrid.hexNodes.map(x => ({
-          neighborIndexes: x.neighborIndexes,
-          weight: x.blocked
-            ? Number.MAX_VALUE
-            : x.movementCost ?? Number.MAX_VALUE,
-          id: x.getId(),
-        })),
-        maxCost: 10,
-      };
+      const res = runDijkstra(hexGrid.hexNodes, startHex, 10);
 
-      const res = runDijkstra(graph);
-      const found: hexNode[] = [];
-      res
+      const reachable = res
         .filter(x => x.cost < Number.MAX_VALUE)
-        .forEach(x => {
-          const foo = hexGrid.hexNodes.find(h => h.getId() === x.id)!;
-          found.push(foo);
-        });
-      setReachable(found);
+        .map(x => x.node);
+
+      setReachable(reachable);
     } else {
       setReachable(undefined);
     }
@@ -72,10 +58,10 @@ function App() {
       const aStarAlg = new aStar(
         startHex,
         endHex,
-        (c, n) => (n as hexNode).movementCost ?? 1,
-        (a, b) => HexService.distance(a as hexNode, b as hexNode)
+        (c, n) => (n as HexNode).weight ?? 1,
+        (a, b) => distance(a as HexNode, b as HexNode)
       );
-      const res = aStarAlg.run() as hexNode[];
+      const res = aStarAlg.run() as HexNode[];
       setFoundPath(res);
     } else {
       setFoundPath(undefined);
@@ -96,12 +82,11 @@ function App() {
             <>
               {hexGrid.hexNodes.map(hex => {
                 const isPath =
-                  foundPath?.find(x => HexService.equals(x, hex)) !== undefined;
+                  foundPath?.find(x => equals(x, hex)) !== undefined;
                 const isReachable =
                   reachable === undefined
                     ? true
-                    : reachable?.find(x => HexService.equals(x, hex)) !==
-                      undefined;
+                    : reachable?.find(x => equals(x, hex)) !== undefined;
 
                 return (
                   <Hexagon
@@ -123,33 +108,30 @@ function App() {
                           : hex.terrain?.type === "Plains"
                           ? COLORS.green[5]
                           : COLORS.dark[9],
-                      stroke: HexService.equals(startHex, hex)
+                      stroke: equals(startHex, hex)
                         ? COLORS.dark[9]
                         : isPath
                         ? COLORS.blue[9]
                         : undefined,
                       opacity: isReachable ? 1 : 0.4,
                       strokeWidth:
-                        hex.blocked || hex.movementCost === Number.MAX_VALUE
+                        hex.blocked || hex.weight === Number.MAX_VALUE
                           ? 0
-                          : HexService.equals(startHex, hex)
+                          : equals(startHex, hex)
                           ? 5
                           : isPath
                           ? 5
                           : 0,
                     }}
                     onClick={() => {
-                      if (HexService.equals(startHex, hex)) {
+                      if (equals(startHex, hex)) {
                         setStartHex(undefined);
                       } else if (!hex.blocked) {
                         setStartHex(hex);
                       }
                     }}
                     onMouseEnter={() => {
-                      if (
-                        hex.blocked ||
-                        hex.movementCost === Number.MAX_VALUE
-                      ) {
+                      if (hex.blocked || hex.weight === Number.MAX_VALUE) {
                         setEndHex(undefined);
                       } else {
                         setEndHex(hex);

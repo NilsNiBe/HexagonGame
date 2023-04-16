@@ -1,12 +1,12 @@
 import * as React from "react";
-import { orientation } from "../models/orientation";
-import { point } from "../models/point";
+import { Orientation } from "../models/Orientation";
+import { Point } from "../models/Point";
 
 export type Size = { x: number; y: number };
 
 export type LayoutDimension = {
   size: Size;
-  orientation: orientation;
+  orientation: Orientation;
   origin: Size;
   spacing: number;
 };
@@ -15,7 +15,7 @@ export type LayoutContextProps = {
   points: string;
 };
 
-const LAYOUT_FLAT = new orientation(
+const LAYOUT_FLAT = new Orientation(
   3.0 / 2.0,
   0.0,
   Math.sqrt(3.0) / 2.0,
@@ -26,7 +26,7 @@ const LAYOUT_FLAT = new orientation(
   Math.sqrt(3.0) / 3.0,
   0.0
 );
-const LAYOUT_POINTY = new orientation(
+const LAYOUT_POINTY = new Orientation(
   Math.sqrt(3.0),
   Math.sqrt(3.0) / 2.0,
   0.0,
@@ -37,8 +37,8 @@ const LAYOUT_POINTY = new orientation(
   2.0 / 3.0,
   0.5
 );
-const defaultSize = new point(10, 10);
-const defaultOrigin = new point(0, 0);
+const defaultSize: Point = { x: 10, y: 10 };
+const defaultOrigin: Point = { x: 0, y: 0 };
 const defaultSpacing = 1.0;
 
 const Context = React.createContext<LayoutContextProps>({
@@ -67,14 +67,14 @@ export function useLayoutContext() {
 function calculateCoordinates(
   circumradius: number,
   angle: number = 0,
-  center: point = new point(0, 0)
+  center: Point = { x: 0, y: 0 }
 ) {
-  const corners: point[] = [];
+  const corners: Point[] = [];
 
   for (let i = 0; i < 6; i++) {
     const x = circumradius * Math.cos((2 * Math.PI * i) / 6 + angle);
     const y = circumradius * Math.sin((2 * Math.PI * i) / 6 + angle);
-    const p = new point(center.x + x, center.y + y);
+    const p: Point = { x: center.x + x, y: center.y + y };
     corners.push(p);
   }
 

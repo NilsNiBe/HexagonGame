@@ -1,4 +1,4 @@
-import point from "../models/point";
+import Point from "../models/Point";
 import { Size } from "./Layout";
 
 export type PatternProps = {
@@ -6,7 +6,7 @@ export type PatternProps = {
   link: string;
   size?: Size;
 };
-const defaultSize = new point(10, 10);
+const defaultSize: Point = { x: 10, y: 10 };
 
 /**
  * Defines an `<defs><pattern><image>` group (will not be rendered) in order to allow defining images.

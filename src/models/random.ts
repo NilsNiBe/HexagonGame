@@ -11,7 +11,7 @@ import { Infantry } from "./units/ground/Infantry";
 import { LightArtillery } from "./units/ground/LightArtillery";
 import { MediumArtillery } from "./units/ground/MediumArtillery";
 
-export const randomUnit = () => {
+export const RandomUnit = () => {
   const r = Math.random();
   if (r < 0.05) {
     return Infantry;

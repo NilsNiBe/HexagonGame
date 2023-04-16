@@ -1,4 +1,4 @@
-export class orientation {
+export class Orientation {
   public f0: number;
   public f1: number;
   public f2: number;
@@ -32,4 +32,4 @@ export class orientation {
   }
 }
 
-export default orientation;
+export default Orientation;

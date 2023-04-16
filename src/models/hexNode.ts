@@ -1,35 +1,35 @@
-import { node } from "../services/aStarService";
-import HexService from "../services/HexService";
-import hexagon from "./hexagon";
+import { equals } from "../services/HexService";
+import { GridNode } from "./GridNode";
+import hexagon from "./Hexagon";
 import { Terrain } from "./terrain/Terrain";
 import { Unit } from "./units/Unit";
 
-export class hexNode extends hexagon implements node {
+export class HexNode extends hexagon implements GridNode {
   public f: number;
   public g: number;
   public h?: number;
   // obsolete
-  neighbors: node[];
+  neighbors: GridNode[];
   neighborIndexes: number[];
-  predecessor?: node;
-  movementCost?: number;
+  predecessor?: GridNode;
   terrain?: Terrain;
   unit?: Unit;
+  weight: number;
 
   constructor(
     q: number,
     r: number,
     s: number,
+    weight: number,
     blocked?: boolean,
-    movementCost?: number,
     terrain?: Terrain,
     unit?: Unit,
     f?: number,
     g?: number,
     h?: number,
-    neighbors?: node[],
+    neighbors?: GridNode[],
     neighborIndexes?: number[],
-    predecessor?: node
+    predecessor?: GridNode
   ) {
     super(q, r, s, blocked);
     this.f = f ?? 0;
@@ -38,13 +38,13 @@ export class hexNode extends hexagon implements node {
     this.neighbors = neighbors ?? [];
     this.neighborIndexes = neighborIndexes ?? [];
     this.predecessor = predecessor;
-    this.movementCost = movementCost;
     this.terrain = terrain;
     this.unit = unit;
+    this.weight = weight;
   }
 
-  equals(node: node): boolean {
-    const hex = node as hexNode;
-    return HexService.equals(this, hex);
+  equals(node: GridNode): boolean {
+    const hex = node as HexNode;
+    return equals(this, hex);
   }
 }

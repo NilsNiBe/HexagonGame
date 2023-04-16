@@ -1,26 +1,18 @@
-export interface node {
-  f: number;
-  g: number;
-  h?: number;
-  neighbors: node[];
-  predecessor?: node;
-  equals(node: node): boolean;
-  blocked?: boolean;
-}
+import { GridNode } from "../models/GridNode";
 
 export class aStar {
-  openList: node[] = [];
-  closedList: node[] = [];
-  startNode: node;
-  endNode: node;
-  gToNeighbor: (current: node, neighbor: node) => number;
-  heuristic: (a: node, b: node) => number;
+  openList: GridNode[] = [];
+  closedList: GridNode[] = [];
+  startNode: GridNode;
+  endNode: GridNode;
+  gToNeighbor: (current: GridNode, neighbor: GridNode) => number;
+  heuristic: (a: GridNode, b: GridNode) => number;
 
   constructor(
-    startNode: node,
-    endNode: node,
-    gToNeighbor: (a: node, b: node) => number,
-    heuristic: (a: node, b: node) => number
+    startNode: GridNode,
+    endNode: GridNode,
+    gToNeighbor: (a: GridNode, b: GridNode) => number,
+    heuristic: (a: GridNode, b: GridNode) => number
   ) {
     this.startNode = startNode;
     this.endNode = endNode;
@@ -28,7 +20,7 @@ export class aStar {
     this.heuristic = heuristic;
   }
 
-  run(): node[] {
+  run(): GridNode[] {
     // Initialisierung der Open List, die Closed List ist noch leer
     // (die Priorität bzw. der f-Wert des Startknotens ist unerheblich)
     this.openList.push(this.startNode);
@@ -40,7 +32,7 @@ export class aStar {
       let current = this.openList.reduce((r, e) => (r.f < e.f ? r : e));
       this.openList.splice(this.openList.indexOf(current), 1);
       // Wurde das Ziel gefunden?
-      if (this.endNode.equals(current)) {
+      if (this.endNode === current) {
         return this.pathFound();
       }
       // Der aktuelle Knoten soll durch nachfolgende Funktionen
@@ -54,8 +46,8 @@ export class aStar {
     return [];
   }
 
-  pathFound(): node[] {
-    const res: node[] = [];
+  pathFound(): GridNode[] {
+    const res: GridNode[] = [];
     if (!this.endNode.predecessor) {
       return res;
     }
@@ -71,7 +63,7 @@ export class aStar {
   // Überprüft alle Nachfolgeknoten und fügt sie der Open List hinzu, wenn entweder
   // - der Nachfolgeknoten zum ersten Mal gefunden wird, oder
   // - ein besserer Weg zu diesem Knoten gefunden wird
-  expandNode(current: node) {
+  expandNode(current: GridNode) {
     const neighbors = current.neighbors.filter(x => !x.blocked);
 
     for (let i = 0; i < neighbors.length; i++) {

@@ -1,32 +1,25 @@
-export interface DijkstraProps {
-  graph: DijkstraNode[];
-  startindex: number;
-  maxCost?: number;
-}
+import { GridNode } from "../models/GridNode";
 
-export interface DijkstraNode {
-  neighborIndexes: number[];
-  weight: number;
-  id: string;
-}
-
-export interface DijkstraNodeRes extends DijkstraNode {
+export interface DijkstraNodeRes<T extends GridNode> {
+  node: T;
   cost: number;
-  previous?: DijkstraNodeRes;
+  previous?: DijkstraNodeRes<T>;
   visited: boolean;
 }
 
-export const runDijkstra = (props: DijkstraProps): DijkstraNodeRes[] => {
-  const { graph, startindex, maxCost } = props;
-
-  const graphRes: DijkstraNodeRes[] = graph.map(x => ({
-    ...x,
+export const runDijkstra = <T extends GridNode>(
+  graph: T[],
+  startNode: T,
+  maxCost?: number
+): DijkstraNodeRes<T>[] => {
+  const graphRes: DijkstraNodeRes<T>[] = graph.map(x => ({
+    node: x,
     cost: Number.MAX_VALUE,
     visited: false,
   }));
-  graphRes[startindex].cost = 0;
+  graphRes.find(x => x.node === startNode)!.cost = 0;
 
-  while (graphRes.some(x => !x.visited && x.weight < Number.MAX_VALUE)) {
+  while (graphRes.some(x => !x.visited && x.node.weight < Number.MAX_VALUE)) {
     const current = graphRes
       .filter(x => !x.visited)
       .reduce((a, b) => (a.cost < b.cost ? a : b));
@@ -35,12 +28,13 @@ export const runDijkstra = (props: DijkstraProps): DijkstraNodeRes[] => {
       continue;
     }
 
-    const unvisitedNeighbors = current.neighborIndexes
-      .map(i => graphRes[i])
-      .filter(x => !x.visited && x.weight < Number.MAX_VALUE);
+    const unvisitedNeighbors = current.node.neighbors
+      .map(x => graphRes.find(g => g.node === x)!)
+      .filter(x => !x.visited && x.node.weight < Number.MAX_VALUE);
+
     for (let i = 0; i < unvisitedNeighbors.length; i++) {
       const neighbor = unvisitedNeighbors[i];
-      const cost = current.cost + neighbor.weight;
+      const cost = current.cost + neighbor.node.weight;
 
       if (cost < neighbor.cost) {
         neighbor.cost = cost;

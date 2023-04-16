@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import * as React from "react";
 import { COLORS } from "../assets/colors";
-import hexagon from "../models/hexagon";
-import point from "../models/point";
-import { HexService } from "../services/HexService";
+import hexagon from "../models/Hexagon";
+import Point from "../models/Point";
+import { hexToPixel } from "../services/HexService";
 import { useLayoutContext } from "./Layout";
 
 type H = { data?: any; state: { hex: hexagon }; props: HexagonProps };
@@ -47,7 +47,7 @@ export type HexagonProps = {
 
 type TargetProps = {
   hex: hexagon;
-  pixel: point;
+  pixel: Point;
   data?: any;
   fill?: string;
   className?: string;
@@ -101,7 +101,7 @@ export function Hexagon(
 
   const { hex, pixel } = React.useMemo(() => {
     const hex = new hexagon(q, r, s);
-    const pixel = HexService.hexToPixel(hex, layout);
+    const pixel = hexToPixel(hex, layout);
     return {
       hex,
       pixel,

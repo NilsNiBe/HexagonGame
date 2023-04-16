@@ -1,25 +1,23 @@
 import GridGenerator from "../services/gridService";
-import HexService from "../services/HexService";
-import { hexNode } from "./hexNode";
-import { randomTerrain, randomUnit } from "./random";
+import { neighbors } from "../services/HexService";
+import { HexNode } from "./HexNode";
+import { randomTerrain, RandomUnit } from "./Random";
 
-export class hexagonNodeGrid {
-  hexNodes: hexNode[];
+export class HexagonNodeGrid {
+  hexNodes: HexNode[];
 
   constructor(width: number, height: number, percentageBlocked?: number) {
     const hexagons = GridGenerator.orientedRectangle(width, height);
     const hexNodes = hexagons.map(x => {
       const terrain = randomTerrain();
-      const unit = terrain.cost < Number.MAX_VALUE ? randomUnit() : undefined;
+      const unit = terrain.cost < Number.MAX_VALUE ? RandomUnit() : undefined;
 
-      return new hexNode(
+      return new HexNode(
         x.q,
         x.r,
         x.s,
-        //x.q % 3 > 1 && x.r % 3 > -1,
-        //percentageBlocked ? Math.random() < percentageBlocked / 100 : false,
-        terrain.type === "Water",
         terrain.cost,
+        terrain.type === "Water",
         terrain,
         unit,
         0,
@@ -27,7 +25,7 @@ export class hexagonNodeGrid {
       );
     });
     hexNodes.forEach(x => {
-      const potentialNeighbors = HexService.neighbors(x);
+      const potentialNeighbors = neighbors(x);
       for (let i = 0; i < potentialNeighbors.length; i++) {
         const neighbor = potentialNeighbors[i];
         const hexNodesNeighborIndex = hexNodes.findIndex(

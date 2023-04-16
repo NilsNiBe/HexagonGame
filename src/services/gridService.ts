@@ -1,5 +1,5 @@
-import { hexagon } from "../models/hexagon";
-import { HexService } from "./HexService";
+import { hexagon } from "../models/Hexagon";
+import { add, direction, multiply, neighbor } from "./HexService";
 
 type Generator = (args: any) => hexagon[];
 
@@ -25,14 +25,11 @@ export class GridGenerator {
   /** May not be working. There are no tests for it. */
   static ring(center: hexagon, mapRadius: number): hexagon[] {
     let hexas: hexagon[] = [];
-    let hex = HexService.add(
-      center,
-      HexService.multiply(HexService.direction(4), mapRadius)
-    );
+    let hex = add(center, multiply(direction(4), mapRadius));
     for (let i = 0; i < 6; i++) {
       for (let j = 0; j < mapRadius; j++) {
         hexas.push(hex);
-        hex = HexService.neighbor(hex, i);
+        hex = neighbor(hex, i);
       }
     }
     return hexas;

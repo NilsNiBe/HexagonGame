@@ -1,4 +1,4 @@
-export interface hexCoordinates {
+export interface HexCoordinates {
   q: number;
   r: number;
   s: number;
@@ -14,7 +14,7 @@ type hexPropsType = {
 //   props: Partial<hexPropsType>;
 //   neighbors: hexagon[];
 // }
-export class hexagon implements hexCoordinates {
+export class hexagon implements HexCoordinates {
   q: number;
   r: number;
   s: number;
