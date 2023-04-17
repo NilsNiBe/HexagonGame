@@ -95,13 +95,13 @@ function App() {
                         hex.terrain?.type === "Water"
                           ? COLORS.blue[5]
                           : hex.terrain?.type === "Mountain"
-                          ? COLORS.gray[3]
+                          ? COLORS.green[3]
                           : hex.terrain?.type === "Street"
                           ? COLORS.gray[5]
                           : hex.terrain?.type === "Forrest"
-                          ? COLORS.green[2]
-                          : hex.terrain?.type === "Plains"
                           ? COLORS.green[5]
+                          : hex.terrain?.type === "Plains"
+                          ? COLORS.green[6]
                           : COLORS.dark[9],
                       stroke: equals(startHex, hex)
                         ? COLORS.dark[9]
@@ -136,10 +136,10 @@ function App() {
                     <>
                       {hex.terrain && (
                         <image
-                          width="2.5%"
-                          height="5%"
-                          x={-23}
-                          y={-20}
+                          width="2.7%"
+                          height="4.9%"
+                          x={-24}
+                          y={-21}
                           preserveAspectRatio="none"
                           href={hex.terrain.image ?? undefined}
                         />
