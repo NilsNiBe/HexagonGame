@@ -14,24 +14,12 @@ type hexPropsType = {
 //   props: Partial<hexPropsType>;
 //   neighbors: hexagon[];
 // }
-export class hexagon implements HexCoordinates {
+export interface HexagonTile extends HexCoordinates {
   q: number;
   r: number;
   s: number;
-
   blocked: boolean;
   text?: string;
   props?: Partial<hexPropsType>;
-
-  constructor(q: number, r: number, s: number, blocked?: boolean) {
-    this.q = q;
-    this.r = r;
-    this.s = s;
-    this.blocked = blocked ?? false;
-  }
-
-  getId(): string {
-    return `${this.q},${this.r},${this.s}`;
-  }
 }
-export default hexagon;
+export default HexagonTile;

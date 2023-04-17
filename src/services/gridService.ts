@@ -1,7 +1,7 @@
-import { hexagon } from "../models/Hexagon";
+import { HexCoordinates } from "../models/HexagonTile";
 import { add, direction, multiply, neighbor } from "./HexService";
 
-type Generator = (args: any) => hexagon[];
+type Generator = (args: any) => HexCoordinates[];
 
 /** This class contains static methods for generating Hex coordinates
  * for specifically-shaped grids, such as rectangle, hexagon, and more. */
@@ -23,8 +23,8 @@ export class GridGenerator {
     return x;
   }
   /** May not be working. There are no tests for it. */
-  static ring(center: hexagon, mapRadius: number): hexagon[] {
-    let hexas: hexagon[] = [];
+  static ring(center: HexCoordinates, mapRadius: number): HexCoordinates[] {
+    let hexas: HexCoordinates[] = [];
     let hex = add(center, multiply(direction(4), mapRadius));
     for (let i = 0; i < 6; i++) {
       for (let j = 0; j < mapRadius; j++) {
@@ -35,7 +35,7 @@ export class GridGenerator {
     return hexas;
   }
   /** May not be working. There are no tests for it. */
-  static spiral(center: hexagon, mapRadius: number): hexagon[] {
+  static spiral(center: HexCoordinates, mapRadius: number): HexCoordinates[] {
     let results = [center];
     for (let k = 1; k <= mapRadius; k++) {
       const temp = GridGenerator.ring(center, k);
@@ -50,11 +50,11 @@ export class GridGenerator {
     q2: number,
     r1: number,
     r2: number
-  ): hexagon[] {
-    let hexas: hexagon[] = [];
+  ): HexCoordinates[] {
+    let hexas: HexCoordinates[] = [];
     for (let q = q1; q <= q2; q++) {
       for (let r = r1; r <= r2; r++) {
-        hexas.push(new hexagon(q, r, -q - r));
+        hexas.push({ q: q, r: r, s: -q - r });
       }
     }
 
@@ -63,36 +63,36 @@ export class GridGenerator {
   /** Returns an array of Hex coordinates needed to create a
    * triangle grid
    */
-  static triangle(mapSize: number): hexagon[] {
-    let hexas: hexagon[] = [];
+  static triangle(mapSize: number): HexCoordinates[] {
+    let hexas: HexCoordinates[] = [];
     for (let q = 0; q <= mapSize; q++) {
       for (let r = 0; r <= mapSize - q; r++) {
-        hexas.push(new hexagon(q, r, -q - r));
+        hexas.push({ q: q, r: r, s: -q - r });
       }
     }
     return hexas;
   }
   /** Returns an array of Hex coordinates needed to create a
    * Hexagon grid */
-  static hexagon(mapRadius: number): hexagon[] {
-    let hexas: hexagon[] = [];
+  static hexagon(mapRadius: number): HexCoordinates[] {
+    let hexas: HexCoordinates[] = [];
     for (let q = -mapRadius; q <= mapRadius; q++) {
       let r1 = Math.max(-mapRadius, -q - mapRadius);
       let r2 = Math.min(mapRadius, -q + mapRadius);
       for (let r = r1; r <= r2; r++) {
-        hexas.push(new hexagon(q, r, -q - r));
+        hexas.push({ q: q, r: r, s: -q - r });
       }
     }
     return hexas;
   }
   /** Returns an array of Hex coordinates needed to create
    * a diagonal rectangle grid */
-  static rectangle(mapWidth: number, mapHeight: number): hexagon[] {
-    let hexas: hexagon[] = [];
+  static rectangle(mapWidth: number, mapHeight: number): HexCoordinates[] {
+    let hexas: HexCoordinates[] = [];
     for (let r = 0; r < mapHeight; r++) {
       let offset = Math.floor(r / 2); // or r>>1
       for (let q = -offset; q < mapWidth - offset; q++) {
-        hexas.push(new hexagon(q, r, -q - r));
+        hexas.push({ q: q, r: r, s: -q - r });
       }
     }
     return hexas;
@@ -100,12 +100,15 @@ export class GridGenerator {
   /** Returns an array of Hex coordinates needed to create a vertical
    * and horizontal rectangle.
    */
-  static orientedRectangle(mapWidth: number, mapHeight: number): hexagon[] {
-    let hexas: hexagon[] = [];
+  static orientedRectangle(
+    mapWidth: number,
+    mapHeight: number
+  ): HexCoordinates[] {
+    let hexas: HexCoordinates[] = [];
     for (let q = 0; q < mapWidth; q++) {
       let offset = Math.floor(q / 2); // or q>>1
       for (let r = -offset; r < mapHeight - offset; r++) {
-        hexas.push(new hexagon(q, r, -q - r));
+        hexas.push({ q: q, r: r, s: -q - r });
       }
     }
 

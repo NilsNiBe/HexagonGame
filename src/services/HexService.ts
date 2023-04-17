@@ -1,14 +1,14 @@
 import { LayoutDimension } from "../components/Layout";
-import { hexagon, HexCoordinates } from "../models/Hexagon";
+import { HexagonTile, HexCoordinates } from "../models/HexagonTile";
 import { Point } from "../models/Point";
 
-export const DIRECTIONS = [
-  new hexagon(1, 0, -1),
-  new hexagon(1, -1, 0),
-  new hexagon(0, -1, 1),
-  new hexagon(-1, 0, 1),
-  new hexagon(-1, 1, 0),
-  new hexagon(0, 1, -1),
+export const DIRECTIONS: HexCoordinates[] = [
+  { q: 1, r: 0, s: -1 },
+  { q: 1, r: -1, s: 0 },
+  { q: 0, r: -1, s: 1 },
+  { q: -1, r: 0, s: 1 },
+  { q: -1, r: 1, s: 0 },
+  { q: 0, r: 1, s: -1 },
 ];
 
 /**
@@ -29,36 +29,36 @@ export function equals(
  * Returns a new Hex with the addition of q,r,s values from A and B respectively
  * @param {HexCoordinates} a - first set of coordinates
  * @param {HexCoordinates} b - second set of coordinates
- * @returns {hexagon} - new hex at the position of the sum of the coords
+ * @returns {HexagonTile} - new hex at the position of the sum of the coords
  */
-export function add(a: HexCoordinates, b: HexCoordinates): hexagon {
-  return new hexagon(a.q + b.q, a.r + b.r, a.s + b.s);
+export function add(a: HexCoordinates, b: HexCoordinates): HexCoordinates {
+  return { q: a.q + b.q, r: a.r + b.r, s: a.s + b.s };
 }
 
 /**
  * Returns a new Hex with the subtraction of q,r,s values from A and B respectively
  * @param {HexCoordinates} a - first set of coordinates
  * @param {HexCoordinates} b - second set of coordinates
- * @returns {hexagon} - new hex at the position of the difference between a and b
+ * @returns {HexagonTile} - new hex at the position of the difference between a and b
  */
-export function subtract(a: HexCoordinates, b: HexCoordinates): hexagon {
-  return new hexagon(a.q - b.q, a.r - b.r, a.s - b.s);
+export function subtract(a: HexCoordinates, b: HexCoordinates): HexCoordinates {
+  return { q: a.q - b.q, r: a.r - b.r, s: a.s - b.s };
 }
 
 /**
  * @param {HexCoordinates} a - first set of coordinates
  * @param {HexCoordinates} k - second set of coordinates
- * @returns {hexagon} new hex at the position of the product between a's coordinates and a constant k
+ * @returns {HexagonTile} new hex at the position of the product between a's coordinates and a constant k
  */
-export function multiply(a: HexCoordinates, k: number): hexagon {
-  return new hexagon(a.q * k, a.r * k, a.s * k);
+export function multiply(a: HexCoordinates, k: number): HexCoordinates {
+  return { q: a.q * k, r: a.r * k, s: a.s * k };
 }
 
 /**
- * @param {hexagon} hex - target hex
+ * @param {HexagonTile} hex - target hex
  * @returns {number} manhattan distance between hex and origin
  */
-export function lengths(hex: hexagon): number {
+export function lengths(hex: HexCoordinates): number {
   return (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2;
 }
 
@@ -76,28 +76,31 @@ export function distance(a: HexCoordinates, b: HexCoordinates): number {
  * Returns a Hex whos coordinates represent the delta needed to move
  * in the given direction
  * @param {number} direction - number representing the direction
- * @returns {hexagon}
+ * @returns {HexagonTile}
  */
-export function direction(direction: number): hexagon {
+export function direction(direction: number): HexCoordinates {
   return DIRECTIONS[(6 + (direction % 6)) % 6];
 }
 
 /**
  * Returns a Hex which is in the given direction.
- * @param {hexagon} hex - starting hex
+ * @param {HexagonTile} hex - starting hex
  * @param {number} direction - number representing the direction
- * @returns {hexagon} Hex which is adjacent in the given direction
+ * @returns {HexagonTile} Hex which is adjacent in the given direction
  */
-export function neighbor(hex: hexagon, directionNumber: number): hexagon {
+export function neighbor(
+  hex: HexCoordinates,
+  directionNumber: number
+): HexCoordinates {
   return add(hex, direction(directionNumber));
 }
 
 /** Returns an array of all the direct neighbors of a Hex within one Hex away
- * @param {hexagon} hex - starting hex
- * @returns {hexagon[]} array containing all adjacent Hexes
+ * @param {HexagonTile} hex - starting hex
+ * @returns {HexagonTile[]} array containing all adjacent Hexes
  */
-export function neighbors(hex: hexagon): hexagon[] {
-  const array: hexagon[] = [];
+export function neighbors(hex: HexCoordinates): HexCoordinates[] {
+  const array: HexCoordinates[] = [];
   for (let i = 0; i < DIRECTIONS.length; i += 1) {
     array.push(neighbor(hex, i));
   }
@@ -107,10 +110,10 @@ export function neighbors(hex: hexagon): hexagon[] {
 /**
  * rounds the axial coordinate values of a Hex trying to maintain the
  * smallest difference from the current coordinate values.
- * @param {hexagon} hex - the hexagon which needs its coordinates rounded
- * @return {hexagon} - a Hex which contains the rounded coordinates
+ * @param {HexagonTile} hex - the hexagon which needs its coordinates rounded
+ * @return {HexagonTile} - a Hex which contains the rounded coordinates
  */
-export function round(hex: hexagon) {
+export function round(hex: HexCoordinates) {
   let rq = Math.round(hex.q);
   let rr = Math.round(hex.r);
   let rs = Math.round(hex.s);
@@ -123,16 +126,19 @@ export function round(hex: hexagon) {
   else if (rDiff > sDiff) rr = -rq - rs;
   else rs = -rq - rr;
 
-  return new hexagon(rq, rr, rs);
+  return { q: rq, r: rr, s: rs };
 }
 
 /** Given the q,r,s of a hexagon return the x and y pixel coordinates of the
  * hexagon center.
- * @param {hexagon} hex - target Hex
+ * @param {HexagonTile} hex - target Hex
  * @param {LayoutDimensions} layout - layout which contains the Hex
  * @returns {Point} pixel coordinate of the Hex center
  */
-export function hexToPixel(hex: hexagon, layout: LayoutDimension): Point {
+export function hexToPixel(
+  hex: HexCoordinates,
+  layout: LayoutDimension
+): Point {
   const s = layout.spacing;
   const M = layout.orientation;
   let x = (M.f0 * hex.q + M.f1 * hex.r) * layout.size.x;
@@ -146,9 +152,9 @@ export function hexToPixel(hex: hexagon, layout: LayoutDimension): Point {
 /** Return the q,r,s coordinate of the hexagon given pixel point x and y.
  * @param {Point} p - target pixel coordinates
  * @param {LayoutDimension} layout - layout of the desired
- * @returns {hexagon} Hex with coordinate position at the
+ * @returns {HexagonTile} Hex with coordinate position at the
  */
-export function pixelToHex(p: Point, layout: LayoutDimension): hexagon {
+export function pixelToHex(p: Point, layout: LayoutDimension): HexCoordinates {
   const M = layout.orientation;
   const pt = {
     x: (p.x - layout.origin.x) / layout.size.x,
@@ -156,7 +162,7 @@ export function pixelToHex(p: Point, layout: LayoutDimension): hexagon {
   };
   const q = M.b0 * pt.x + M.b1 * pt.y;
   const r = M.b2 * pt.x + M.b3 * pt.y;
-  const hex = new hexagon(q, r, -q - r);
+  const hex = { q: q, r: r, s: -q - r };
   return round(hex);
 }
 
@@ -179,14 +185,14 @@ export function lerp(a: number, b: number, t: number): number {
  * @param {HexCoordinates} a - left hand hex
  * @param {HexCoordinates} b - right hand hex
  * @param {number} t - alpha blending value
- * @returns {hexagon} new Hex which is between the two Hexes
+ * @returns {HexagonTile} new Hex which is between the two Hexes
  */
 export function hexLerp(
   a: HexCoordinates,
   b: HexCoordinates,
   t: number
-): hexagon {
-  return new hexagon(lerp(a.q, b.q, t), lerp(a.r, b.r, t), lerp(a.s, b.s, t));
+): HexCoordinates {
+  return { r: lerp(a.q, b.q, t), s: lerp(a.r, b.r, t), q: lerp(a.s, b.s, t) };
 }
 
 /** Return a string ID from Hex Coordinates.

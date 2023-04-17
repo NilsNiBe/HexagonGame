@@ -5,14 +5,14 @@ import Hexagon from "./components/Hexagon";
 import HexGrid from "./components/HexGrid";
 import Layout from "./components/Layout";
 import { HexagonNodeGrid } from "./models/HexagonGrid";
-import { HexNode } from "./models/HexNode";
+import { getId, HexNode } from "./models/HexNode";
 import { runAStar } from "./services/aStarService";
 import { runDijkstra } from "./services/Dijkstra";
 import { distance, equals } from "./services/HexService";
 
 function App() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
-    new HexagonNodeGrid(47, 19, 30)
+    new HexagonNodeGrid(47, 19)
   );
   const [startHex, setStartHex] = React.useState<HexNode | undefined>(
     undefined
@@ -85,7 +85,7 @@ function App() {
 
                 return (
                   <Hexagon
-                    key={hex.getId()}
+                    key={getId(hex)}
                     q={hex.q}
                     r={hex.r}
                     s={hex.s}

@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import * as React from "react";
 import { COLORS } from "../assets/colors";
-import hexagon from "../models/Hexagon";
+import HexagonTile from "../models/HexagonTile";
 import Point from "../models/Point";
 import { hexToPixel } from "../services/HexService";
 import { useLayoutContext } from "./Layout";
 
-type H = { data?: any; state: { hex: hexagon }; props: HexagonProps };
+type H = { data?: any; state: { hex: HexagonTile }; props: HexagonProps };
 
 export type HexagonDragEventHandler<T = Element, AdditionalData = any> = (
   event: React.DragEvent<T>,
@@ -46,7 +46,7 @@ export type HexagonProps = {
 };
 
 type TargetProps = {
-  hex: hexagon;
+  hex: HexagonTile;
   pixel: Point;
   data?: any;
   fill?: string;
@@ -100,7 +100,7 @@ export function Hexagon(
   const svgRef = React.useRef<SVGElement>(null);
 
   const { hex, pixel } = React.useMemo(() => {
-    const hex = new hexagon(q, r, s);
+    const hex = { q, r, s, blocked: false };
     const pixel = hexToPixel(hex, layout);
     return {
       hex,
@@ -119,13 +119,13 @@ export function Hexagon(
     strokeWidth: isMouseOver ? "5" : cellStyle?.strokeWidth,
   };
 
-  const buildWall = (e: React.MouseEvent<SVGGElement>) => {
-    if (e.ctrlKey && e.button === 0) {
-      if (props.onCtrlMouseClick) {
-        props.onCtrlMouseClick(e, { data, state, props });
-      }
-    }
-  };
+  // const buildWall = (e: React.MouseEvent<SVGGElement>) => {
+  //   if (e.ctrlKey && e.button === 0) {
+  //     if (props.onCtrlMouseClick) {
+  //       props.onCtrlMouseClick(e, { data, state, props });
+  //     }
+  //   }
+  // };
 
   return (
     <g
@@ -173,7 +173,6 @@ export function Hexagon(
         }
       }}
       onClick={e => {
-        buildWall(e);
         if (onClick) {
           onClick(e, { data, state, props });
         }

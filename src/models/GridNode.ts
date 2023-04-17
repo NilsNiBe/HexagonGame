@@ -4,7 +4,7 @@ export interface GridNode {
   h?: number;
   neighbors: GridNode[];
   predecessor?: GridNode;
-  blocked?: boolean;
+  blocked: boolean;
   weight: number;
 }
 

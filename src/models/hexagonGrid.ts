@@ -6,23 +6,24 @@ import { randomTerrain, RandomUnit } from "./Random";
 export class HexagonNodeGrid {
   hexNodes: HexNode[];
 
-  constructor(width: number, height: number, percentageBlocked?: number) {
+  constructor(width: number, height: number) {
     const hexagons = GridGenerator.orientedRectangle(width, height);
-    const hexNodes = hexagons.map(x => {
+    const hexNodes: HexNode[] = hexagons.map(x => {
       const terrain = randomTerrain();
       const unit = terrain.cost < Number.MAX_VALUE ? RandomUnit() : undefined;
 
-      return new HexNode(
-        x.q,
-        x.r,
-        x.s,
-        terrain.cost,
-        terrain.type === "Water",
+      return {
+        q: x.q,
+        r: x.r,
+        s: x.s,
+        weight: terrain.cost,
+        blocked: terrain.type === "Water",
         terrain,
         unit,
-        0,
-        0
-      );
+        f: 0,
+        g: 0,
+        neighbors: [],
+      };
     });
     hexNodes.forEach(x => {
       const potentialNeighbors = neighbors(x);
@@ -36,7 +37,6 @@ export class HexagonNodeGrid {
         );
         if (hexNodesNeighborIndex > -1) {
           x.neighbors.push(hexNodes[hexNodesNeighborIndex]);
-          x.neighborIndexes.push(hexNodesNeighborIndex);
         }
       }
     });
