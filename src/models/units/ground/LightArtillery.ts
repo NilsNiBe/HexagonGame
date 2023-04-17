@@ -2,7 +2,7 @@ import { UnitSvg } from "../../../assets";
 import { Unit } from "../Unit";
 
 export const LightArtillery: Unit = {
-  type: "light-artillery",
+  type: "Light-Artillery",
   name: "Light Artillery",
   cost: 55,
   ground: { power: 45, range: 3 },

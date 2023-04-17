@@ -2,7 +2,7 @@ import { UnitSvg } from "../../../assets";
 import { Unit } from "../Unit";
 
 export const HeavyArtillery: Unit = {
-  type: "heavy-artillery",
+  type: "Heavy-Artillery",
   name: "Heavy Artillery",
   cost: 85,
   ground: { power: 70, range: 6 },

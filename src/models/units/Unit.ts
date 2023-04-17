@@ -1,10 +1,13 @@
-export type UnitType =
-  | "infantry"
-  | "elite-infantry"
-  | "cavalry"
-  | "light-artillery"
-  | "medium-artillery"
-  | "heavy-artillery";
+export const UNIT_TYPES = [
+  "Infantry",
+  "Elite-Infantry",
+  "Cavalry",
+  "Light-Artillery",
+  "Medium-Artillery",
+  "Heavy-Artillery",
+] as const;
+
+export type UnitType = typeof UNIT_TYPES[number];
 
 export interface Unit {
   type: UnitType;
