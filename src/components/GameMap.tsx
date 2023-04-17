@@ -1,7 +1,6 @@
 import React from "react";
 import "../App.css";
 import { COLORS } from "../assets/colors";
-import { Coordinates } from "../components/Coordinates";
 import Hexagon from "../components/Hexagon";
 import HexGrid from "../components/HexGrid";
 import Layout from "../components/Layout";
@@ -157,7 +156,7 @@ export function GameMap() {
                       />
                     )}
                   </>
-                  <Coordinates q={hex.q} r={hex.r} s={hex.s} />
+                  {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
                 </Hexagon>
               );
             })}

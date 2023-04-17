@@ -5,7 +5,6 @@ import { createWaterHexagonGrid, HexagonNodeGrid } from "../models/HexagonGrid";
 import { getId } from "../models/HexNode";
 import { Terrain, TERRAIN_TYPES } from "../models/terrain/Terrain";
 import { Unit, UNIT_TYPES } from "../models/units/Unit";
-import { Coordinates } from "./Coordinates";
 import Hexagon from "./Hexagon";
 import HexGrid from "./HexGrid";
 import Layout from "./Layout";
@@ -98,7 +97,7 @@ export function EditorMap() {
                       />
                     )}
                   </>
-                  <Coordinates q={hex.q} r={hex.r} s={hex.s} />
+                  {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
                 </Hexagon>
               );
             })}
