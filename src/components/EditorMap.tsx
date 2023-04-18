@@ -1,7 +1,11 @@
 import React from "react";
 import "../App.css";
 import { COLORS } from "../assets/colors";
-import { createHexagonGrid, HexagonNodeGrid } from "../models/HexagonGrid";
+import {
+  createHexagonGrid,
+  HexagonNodeGrid,
+  stringifyHexagonNodeGrid,
+} from "../models/HexagonGrid";
 import { getId, HexNode } from "../models/HexNode";
 import { Plains } from "../models/terrain/Plains";
 import {
@@ -95,6 +99,9 @@ export function EditorMap() {
             No Unit
           </label>
         </div>
+        <button onClick={() => console.log(stringifyHexagonNodeGrid(hexGrid))}>
+          Print Map to Console
+        </button>
         {/* <text>{selected ? (selected as any) : ""}</text> */}
       </div>
       <HexGrid width={1800} height={1040} viewBox="-30 -30 1800 1040">

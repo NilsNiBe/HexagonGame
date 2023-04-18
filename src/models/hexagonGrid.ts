@@ -9,6 +9,18 @@ export interface HexagonNodeGrid {
   nodes: HexNode[];
 }
 
+export function stringifyHexagonNodeGrid(grid: HexagonNodeGrid) {
+  return JSON.stringify({
+    nodes: grid.nodes.map(x => ({
+      ...x,
+      neighbors: undefined,
+      // neighbors: x.neighbors.map(n => ({
+      //   ...(n as unknown as HexCoordinates),
+      // })),
+    })),
+  });
+}
+
 function getNeighbors(x: HexNode, hexNodes: HexNode[]) {
   const res: HexNode[] = [];
   const potentialNeighbors = neighbors(x);
