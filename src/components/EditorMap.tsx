@@ -154,15 +154,18 @@ export function EditorMap() {
                       }
                     } else if (UNIT_TYPES.includes(selected as UnitType)) {
                       const unit = GetUnit(selected as UnitType);
-                      console.log(unit);
                       if (
                         unit.terrains.includes(hex.terrain?.type ?? "Water")
                       ) {
-                        console.log(unit);
-
-                        setHexGrid(x =>
-                          createHexGrid(x, hex, hex.terrain, unit)
-                        );
+                        if (hex.unit === unit) {
+                          setHexGrid(x =>
+                            createHexGrid(x, hex, hex.terrain, undefined)
+                          );
+                        } else {
+                          setHexGrid(x =>
+                            createHexGrid(x, hex, hex.terrain, unit)
+                          );
+                        }
                       }
                     }
                   }}
