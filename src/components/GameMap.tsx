@@ -7,7 +7,7 @@ import Layout from "../components/Layout";
 import {
   createRandomHexagonGrid,
   HexagonNodeGrid,
-} from "../models/HexagonGrid";
+} from "../models/HexagonNodeGrid";
 import { getId, HexNode } from "../models/HexNode";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/Dijkstra";

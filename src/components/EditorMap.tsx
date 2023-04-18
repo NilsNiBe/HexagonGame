@@ -2,12 +2,12 @@ import React from "react";
 import "../App.css";
 import { COLORS } from "../assets/colors";
 import {
-  createHexagonGrid,
+  createSimpleHexagonNodeGrid,
   HexagonNodeGrid,
-  stringifyHexagonNodeGrid,
-} from "../models/HexagonGrid";
+  tileMapToHexagonGrid,
+} from "../models/HexagonNodeGrid";
 import { getId, HexNode } from "../models/HexNode";
-import { Plains } from "../models/terrain/Plains";
+import { PULSE } from "../models/maps/central/pulse";
 import {
   GetTerrain,
   Terrain,
@@ -21,7 +21,8 @@ import Layout from "./Layout";
 
 export function EditorMap() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
-    createHexagonGrid(15, 23, Plains)
+    tileMapToHexagonGrid(PULSE)
+    // createHexagonGrid(15, 23, Plains)
     // new HexagonNodeGrid(47, 19)
   );
 
@@ -38,7 +39,7 @@ export function EditorMap() {
   function createHexGrid(
     x: HexagonNodeGrid,
     hex: HexNode,
-    terrain?: Terrain,
+    terrain: Terrain,
     unit?: Unit
   ): HexagonNodeGrid {
     return {
@@ -99,7 +100,11 @@ export function EditorMap() {
             No Unit
           </label>
         </div>
-        <button onClick={() => console.log(stringifyHexagonNodeGrid(hexGrid))}>
+        <button
+          onClick={() =>
+            console.log(JSON.stringify(createSimpleHexagonNodeGrid(hexGrid)))
+          }
+        >
           Print Map to Console
         </button>
         {/* <text>{selected ? (selected as any) : ""}</text> */}

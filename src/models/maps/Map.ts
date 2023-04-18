@@ -1,14 +1,6 @@
-import { Terrain } from "../terrain/Terrain";
-import { Unit } from "../units/Unit";
+import { SimpleHexNode } from "../HexNode";
 
 export interface TileMap {
   name: string;
-  tiles: Tile[];
-}
-
-export interface Tile {
-  x: number;
-  y: number;
-  terrain: Terrain;
-  unit?: Unit;
+  nodes: SimpleHexNode[];
 }
