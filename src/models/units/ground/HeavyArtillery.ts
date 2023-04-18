@@ -15,4 +15,5 @@ export const HeavyArtillery: Unit = {
   allies: "Both",
   introduced: "1914",
   image: UnitSvg.HeavyArtillerySvg,
+  terrains: ["Street"],
 };

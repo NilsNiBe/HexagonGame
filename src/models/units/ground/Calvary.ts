@@ -15,4 +15,5 @@ export const Cavalry: Unit = {
   allies: "Both",
   introduced: "1914",
   image: UnitSvg.CavalrySvg,
+  terrains: ["Forrest", "Mountain", "Plains", "Street"],
 };

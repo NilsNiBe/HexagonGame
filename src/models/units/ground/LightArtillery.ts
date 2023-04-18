@@ -15,4 +15,5 @@ export const LightArtillery: Unit = {
   allies: "Both",
   introduced: "1914",
   image: UnitSvg.LightArtillerySvg,
+  terrains: ["Forrest", "Mountain", "Plains", "Street"],
 };

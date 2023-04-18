@@ -15,4 +15,5 @@ export const Infantry: Unit = {
   allies: "Both",
   introduced: "1914",
   image: UnitSvg.InfantrySvg,
+  terrains: ["Forrest", "Mountain", "Plains", "Street"],
 };

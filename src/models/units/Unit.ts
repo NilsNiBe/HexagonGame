@@ -1,3 +1,11 @@
+import { TerrainType } from "../terrain/Terrain";
+import { Cavalry } from "./ground/Calvary";
+import { EliteInfantry } from "./ground/EliteInfantry";
+import { HeavyArtillery } from "./ground/HeavyArtillery";
+import { Infantry } from "./ground/Infantry";
+import { LightArtillery } from "./ground/LightArtillery";
+import { MediumArtillery } from "./ground/MediumArtillery";
+
 export const UNIT_TYPES = [
   "Infantry",
   "Elite-Infantry",
@@ -23,6 +31,7 @@ export interface Unit {
   allies: Allies;
   introduced: Year;
   image: string;
+  terrains: TerrainType[];
 }
 
 export interface Attack {
@@ -32,3 +41,20 @@ export interface Attack {
 
 export type Allies = "Central" | "Entente" | "Both";
 export type Year = "1914" | "1915" | "1916" | "1917" | "1918";
+
+export function GetUnit(type: UnitType) {
+  switch (type) {
+    case "Infantry":
+      return Infantry;
+    case "Elite-Infantry":
+      return EliteInfantry;
+    case "Cavalry":
+      return Cavalry;
+    case "Light-Artillery":
+      return LightArtillery;
+    case "Medium-Artillery":
+      return MediumArtillery;
+    case "Heavy-Artillery":
+      return HeavyArtillery;
+  }
+}

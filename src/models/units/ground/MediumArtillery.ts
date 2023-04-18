@@ -15,4 +15,5 @@ export const MediumArtillery: Unit = {
   allies: "Both",
   introduced: "1914",
   image: UnitSvg.MediumArtillerySvg,
+  terrains: ["Forrest", "Plains", "Street"],
 };
