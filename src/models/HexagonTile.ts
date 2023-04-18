@@ -23,3 +23,7 @@ export interface HexagonTile extends HexCoordinates {
   props?: Partial<hexPropsType>;
 }
 export default HexagonTile;
+
+export function HexCoordinatesEqual(a: HexCoordinates, b: HexCoordinates) {
+  return a.q === b.q && a.r === b.r;
+}

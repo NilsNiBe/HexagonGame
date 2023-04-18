@@ -1,11 +1,27 @@
 import GridGenerator from "../services/gridService";
 import { neighbors } from "../services/HexService";
+import { HexCoordinatesEqual } from "./HexagonTile";
 import { HexNode } from "./HexNode";
 import { randomTerrain, RandomUnit } from "./Random";
-import { Water } from "./terrain/Water";
+import { Terrain } from "./terrain/Terrain";
 
 export interface HexagonNodeGrid {
   nodes: HexNode[];
+}
+
+function getNeighbors(x: HexNode, hexNodes: HexNode[]) {
+  const res: HexNode[] = [];
+  const potentialNeighbors = neighbors(x);
+  for (let i = 0; i < potentialNeighbors.length; i++) {
+    const neighbor = potentialNeighbors[i];
+    const hexNodesNeighborIndex = hexNodes.findIndex(node =>
+      HexCoordinatesEqual(node, neighbor)
+    );
+    if (hexNodesNeighborIndex > -1) {
+      res.push(hexNodes[hexNodesNeighborIndex]);
+    }
+  }
+  return res;
 }
 
 export function createRandomHexagonGrid(
@@ -30,32 +46,17 @@ export function createRandomHexagonGrid(
       neighbors: [],
     };
   });
-  hexNodes.forEach(x => {
-    const potentialNeighbors = neighbors(x);
-    for (let i = 0; i < potentialNeighbors.length; i++) {
-      const neighbor = potentialNeighbors[i];
-      const hexNodesNeighborIndex = hexNodes.findIndex(
-        node =>
-          node.q === neighbor.q &&
-          node.r === neighbor.r &&
-          node.s === neighbor.s
-      );
-      if (hexNodesNeighborIndex > -1) {
-        x.neighbors.push(hexNodes[hexNodesNeighborIndex]);
-      }
-    }
-  });
+  hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
 }
 
-export function createWaterHexagonGrid(
+export function createHexagonGrid(
   width: number,
-  height: number
+  height: number,
+  terrain: Terrain
 ): HexagonNodeGrid {
   const hexagons = GridGenerator.orientedRectangle(width, height);
   const hexNodes: HexNode[] = hexagons.map(x => {
-    const terrain = Water;
-
     return {
       q: x.q,
       r: x.r,
@@ -69,20 +70,6 @@ export function createWaterHexagonGrid(
       neighbors: [],
     };
   });
-  hexNodes.forEach(x => {
-    const potentialNeighbors = neighbors(x);
-    for (let i = 0; i < potentialNeighbors.length; i++) {
-      const neighbor = potentialNeighbors[i];
-      const hexNodesNeighborIndex = hexNodes.findIndex(
-        node =>
-          node.q === neighbor.q &&
-          node.r === neighbor.r &&
-          node.s === neighbor.s
-      );
-      if (hexNodesNeighborIndex > -1) {
-        x.neighbors.push(hexNodes[hexNodesNeighborIndex]);
-      }
-    }
-  });
+  hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
 }

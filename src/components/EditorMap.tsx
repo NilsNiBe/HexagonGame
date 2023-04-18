@@ -1,8 +1,9 @@
 import React from "react";
 import "../App.css";
 import { COLORS } from "../assets/colors";
-import { createWaterHexagonGrid, HexagonNodeGrid } from "../models/HexagonGrid";
+import { createHexagonGrid, HexagonNodeGrid } from "../models/HexagonGrid";
 import { getId, HexNode } from "../models/HexNode";
+import { Plains } from "../models/terrain/Plains";
 import {
   GetTerrain,
   Terrain,
@@ -16,7 +17,7 @@ import Layout from "./Layout";
 
 export function EditorMap() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
-    createWaterHexagonGrid(15, 23)
+    createHexagonGrid(15, 23, Plains)
     // new HexagonNodeGrid(47, 19)
   );
 
