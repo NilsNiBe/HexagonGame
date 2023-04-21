@@ -1,5 +1,5 @@
 import { GridNode } from "./GridNode";
-import HexagonTile from "./HexagonTile";
+import HexagonTile, { HexCoordinates } from "./HexagonTile";
 import { Terrain, TerrainType } from "./terrain/Terrain";
 import { Unit, UnitType } from "./units/Unit";
 
@@ -23,6 +23,36 @@ export interface SimpleHexNode {
 
 export function getId(h: HexNode) {
   return `q:${h.q},r:${h.r}`;
+}
+
+export function createHexNode(h: HexCoordinates, t: Terrain, u?: Unit) : HexNode {
+  return  {
+    q: h.q,
+    r: h.r,
+    s: h.s,
+    weight: t.cost,
+    blocked: t.type === "Water",
+    terrain: t,
+    unit :u,
+    f: 0,
+    g: 0,
+    neighbors: [],
+  }
+}
+
+export function createHexNodeSimple(h: SimpleHexNode, t: Terrain, u?: Unit) : HexNode {
+  return  {
+    q: h.q,
+    r: h.r,
+    s: -h.q-h.r,
+    weight: t.cost,
+    blocked: t.type === "Water",
+    terrain: t,
+    unit :u,
+    f: 0,
+    g: 0,
+    neighbors: [],
+  }
 }
 
 export function createSimpleHexNode(h: HexNode): SimpleHexNode {

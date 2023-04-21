@@ -1,9 +1,9 @@
 import GridGenerator from "../services/gridService";
 import { neighbors } from "../services/HexService";
 import { HexCoordinatesEqual } from "./HexagonTile";
-import { createSimpleHexNode, HexNode, SimpleHexNode } from "./HexNode";
+import { createHexNode, createHexNodeSimple, createSimpleHexNode, HexNode, SimpleHexNode } from "./hexNode";
 import { TileMap } from "./maps/Map";
-import { randomTerrain, RandomUnit } from "./Random";
+import { randomTerrain, RandomUnit } from "./random";
 import { GetTerrain, Terrain } from "./terrain/Terrain";
 import { GetUnit } from "./units/Unit";
 
@@ -46,19 +46,7 @@ export function createRandomHexagonGrid(
   const hexNodes: HexNode[] = hexagons.map(x => {
     const terrain = randomTerrain();
     const unit = terrain.cost < Number.MAX_VALUE ? RandomUnit() : undefined;
-
-    return {
-      q: x.q,
-      r: x.r,
-      s: x.s,
-      weight: terrain.cost,
-      blocked: terrain.type === "Water",
-      terrain,
-      unit,
-      f: 0,
-      g: 0,
-      neighbors: [],
-    };
+    return createHexNode(x, terrain, unit);
   });
   hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
@@ -71,18 +59,7 @@ export function createHexagonGrid(
 ): HexagonNodeGrid {
   const hexagons = GridGenerator.orientedRectangle(width, height);
   const hexNodes: HexNode[] = hexagons.map(x => {
-    return {
-      q: x.q,
-      r: x.r,
-      s: x.s,
-      weight: terrain.cost,
-      blocked: terrain.type === "Water",
-      terrain,
-      undefined,
-      f: 0,
-      g: 0,
-      neighbors: [],
-    };
+    return createHexNode(x, terrain); 
   });
   hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
@@ -91,20 +68,7 @@ export function createHexagonGrid(
 export function tileMapToHexagonGrid(m: TileMap): HexagonNodeGrid {
   return {
     nodes: m.nodes.map(x => {
-      const terrain = GetTerrain(x.t);
-      const unit = x.u ? GetUnit(x.u) : undefined;
-      return {
-        q: x.q,
-        r: x.r,
-        s: -x.q - x.r,
-        weight: terrain.cost,
-        blocked: terrain.type === "Water",
-        terrain,
-        unit,
-        f: 0,
-        g: 0,
-        neighbors: [],
-      };
+      return createHexNodeSimple(x, GetTerrain(x.t), x.u ? GetUnit(x.u) : undefined);
     }),
   };
 }
