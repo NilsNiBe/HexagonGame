@@ -134,7 +134,7 @@ export function Hexagon(
       transform={`translate(${pixel.x}, ${pixel.y})`}
       {...rest}
       {...draggable}
-      onDragStart={e => {
+      onDragStart={(e) => {
         if (onDragStart) {
           const targetProps: TargetProps = {
             hex: hex,
@@ -147,48 +147,48 @@ export function Hexagon(
           onDragStart(e, { data, state, props });
         }
       }}
-      onDragEnd={e => {
+      onDragEnd={(e) => {
         if (onDragEnd) {
           e.preventDefault();
           const success = e.dataTransfer.dropEffect !== "none";
           onDragEnd(e, { state, props }, success);
         }
       }}
-      onDrop={e => {
+      onDrop={(e) => {
         if (onDrop) {
           e.preventDefault();
           const target = JSON.parse(e.dataTransfer.getData("hexagon"));
           onDrop(e, { data, state, props }, target);
         }
       }}
-      onDragOver={e => {
+      onDragOver={(e) => {
         if (onDragOver) {
           onDragOver(e, { data, state, props });
         }
       }}
-      onMouseEnter={e => {
+      onMouseEnter={(e) => {
         setIsMouseOver(true);
         if (onMouseEnter) {
           onMouseEnter(e, { data, state, props });
         }
       }}
-      onClick={e => {
+      onClick={(e) => {
         if (onClick) {
           onClick(e, { data, state, props });
         }
       }}
-      onMouseOver={e => {
+      onMouseOver={(e) => {
         if (onMouseOver) {
           onMouseOver(e, { data, state, props });
         }
       }}
-      onMouseLeave={e => {
+      onMouseLeave={(e) => {
         setIsMouseOver(false);
         if (onMouseLeave) {
           onMouseLeave(e, { data, state, props });
         }
       }}
-      onKeyDown={e => {
+      onKeyDown={(e) => {
         if (e.ctrlKey) {
         }
       }}
