@@ -1,6 +1,6 @@
 import GridGenerator from "../services/gridService";
-import { neighbors } from "../services/HexService";
-import { HexCoordinatesEqual } from "./HexagonTile";
+import { neighbors } from "../services/hexService";
+import { HexCoordinatesEqual } from "./hexagonTile";
 import {
   createHexNode,
   createHexNodeSimple,
@@ -8,10 +8,10 @@ import {
   HexNode,
   SimpleHexNode,
 } from "./hexNode";
-import { TileMap } from "./maps/Map";
+import { TileMap } from "./maps/map";
 import { randomTerrain, RandomUnit } from "./random";
-import { GetTerrain, Terrain } from "./terrain/Terrain";
-import { createUnit, GetUnit } from "./units/Unit";
+import { GetTerrain, Terrain } from "./terrain/terrain";
+import { createUnit, GetUnit } from "./units/unit";
 
 export interface HexagonNodeGrid {
   nodes: HexNode[];

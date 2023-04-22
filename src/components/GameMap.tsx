@@ -8,13 +8,13 @@ import {
   createRandomHexagonGrid,
   HexagonNodeGrid,
   tileMapToHexagonGrid,
-} from "../models/HexagonNodeGrid";
+} from "../models/hexagonNodeGrid";
 import { getId, HexNode } from "../models/hexNode";
 import { runAStar } from "../services/aStarService";
-import { runDijkstra } from "../services/Dijkstra";
-import { distance, equals } from "../services/HexService";
+import { runDijkstra } from "../services/dijkstra";
+import { distance, equals } from "../services/hexService";
 import { UnitSvg } from "./UnitSvg";
-import { GetUnitColor } from "../models/units/Unit";
+import { GetUnitColor } from "../models/units/unit";
 import { PULSE } from "../models/maps/central/pulse";
 
 export function GameMap() {

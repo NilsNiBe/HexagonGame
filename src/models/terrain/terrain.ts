@@ -1,8 +1,8 @@
-import { Forest } from "./Forest";
-import { Mountain } from "./Mountain";
-import { Plains } from "./Plains";
-import { Street } from "./Street";
-import { Water } from "./Water";
+import { Forest } from "./forest";
+import { Mountain } from "./mountain";
+import { Plains } from "./plains";
+import { Street } from "./street";
+import { Water } from "./water";
 
 export const TERRAIN_TYPES = [
   "Street",
@@ -12,7 +12,7 @@ export const TERRAIN_TYPES = [
   "Water",
 ] as const;
 
-export type TerrainType = typeof TERRAIN_TYPES[number];
+export type TerrainType = (typeof TERRAIN_TYPES)[number];
 
 export interface Terrain {
   type: TerrainType;

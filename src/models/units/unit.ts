@@ -1,10 +1,10 @@
-import { TerrainType } from "../terrain/Terrain";
-import { Cavalry } from "./ground/Calvary";
-import { EliteInfantry } from "./ground/EliteInfantry";
-import { HeavyArtillery } from "./ground/HeavyArtillery";
-import { Infantry } from "./ground/Infantry";
-import { LightArtillery } from "./ground/LightArtillery";
-import { MediumArtillery } from "./ground/MediumArtillery";
+import { TerrainType } from "../terrain/terrain";
+import { Cavalry } from "./ground/calvary";
+import { EliteInfantry } from "./ground/eliteInfantry";
+import { HeavyArtillery } from "./ground/heavyArtillery";
+import { Infantry } from "./ground/infantry";
+import { LightArtillery } from "./ground/lightArtillery";
+import { MediumArtillery } from "./ground/mediumArtillery";
 
 export const UNIT_TYPES = [
   "Infantry",

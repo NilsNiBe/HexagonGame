@@ -1,5 +1,5 @@
 import { TerrainSvg } from "../../assets";
-import { Terrain } from "./Terrain";
+import { Terrain } from "./terrain";
 
 export const Forest: Terrain = {
   type: "Forrest",

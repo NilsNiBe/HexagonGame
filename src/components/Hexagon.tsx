@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import * as React from "react";
 import { COLORS } from "../assets/colors";
-import HexagonTile from "../models/HexagonTile";
-import Point from "../models/Point";
-import { hexToPixel } from "../services/HexService";
+import HexagonTile from "../models/hexagonTile";
+import Point from "../models/point";
+import { hexToPixel } from "../services/hexService";
 import { useLayoutContext } from "./Layout";
 
 type H = { data?: any; state: { hex: HexagonTile }; props: HexagonProps };

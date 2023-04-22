@@ -1,5 +1,5 @@
-import { HexCoordinates } from "../models/HexagonTile";
-import { add, direction, multiply, neighbor } from "./HexService";
+import { HexCoordinates } from "../models/hexagonTile";
+import { add, direction, multiply, neighbor } from "./hexService";
 
 type Generator = (args: any) => HexCoordinates[];
 

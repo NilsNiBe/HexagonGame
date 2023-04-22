@@ -1,4 +1,4 @@
-import Point from "../models/Point";
+import Point from "../models/point";
 import { Size } from "./Layout";
 
 export type PatternProps = {

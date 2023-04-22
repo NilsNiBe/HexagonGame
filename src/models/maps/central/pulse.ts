@@ -1,4 +1,4 @@
-import { TileMap } from "../Map";
+import { TileMap } from "../map";
 
 export const PULSE: TileMap = {
   name: "Pulse",

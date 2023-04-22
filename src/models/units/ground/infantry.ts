@@ -1,5 +1,5 @@
 import { UnitSvg } from "../../../assets/index";
-import { UnitKind } from "../Unit";
+import { UnitKind } from "../unit";
 
 export const Infantry: UnitKind = {
   type: "Infantry",

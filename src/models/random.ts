@@ -1,15 +1,15 @@
-import { Forest } from "./terrain/Forest";
-import { Mountain } from "./terrain/Mountain";
-import { Plains } from "./terrain/Plains";
-import { Street } from "./terrain/Street";
-import { Terrain } from "./terrain/Terrain";
-import { Water } from "./terrain/Water";
-import { Cavalry } from "./units/ground/Calvary";
-import { EliteInfantry } from "./units/ground/EliteInfantry";
-import { HeavyArtillery } from "./units/ground/HeavyArtillery";
-import { Infantry } from "./units/ground/Infantry";
-import { LightArtillery } from "./units/ground/LightArtillery";
-import { MediumArtillery } from "./units/ground/MediumArtillery";
+import { Forest } from "./terrain/forest";
+import { Mountain } from "./terrain/mountain";
+import { Plains } from "./terrain/plains";
+import { Street } from "./terrain/street";
+import { Terrain } from "./terrain/terrain";
+import { Water } from "./terrain/water";
+import { Cavalry } from "./units/ground/calvary";
+import { EliteInfantry } from "./units/ground/eliteInfantry";
+import { HeavyArtillery } from "./units/ground/heavyArtillery";
+import { Infantry } from "./units/ground/infantry";
+import { LightArtillery } from "./units/ground/lightArtillery";
+import { MediumArtillery } from "./units/ground/mediumArtillery";
 
 export const RandomUnit = () => {
   const r = Math.random();

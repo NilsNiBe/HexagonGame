@@ -1,6 +1,6 @@
 import { LayoutDimension } from "../components/Layout";
-import { HexagonTile, HexCoordinates } from "../models/HexagonTile";
-import { Point } from "../models/Point";
+import { HexagonTile, HexCoordinates } from "../models/hexagonTile";
+import { Point } from "../models/point";
 
 export const DIRECTIONS: HexCoordinates[] = [
   { q: 1, r: 0, s: -1 },

@@ -1,4 +1,4 @@
-import { GridNode } from "../models/GridNode";
+import { GridNode } from "../models/gridNode";
 
 export function runAStar<T extends GridNode>(
   startNode: T,
@@ -59,7 +59,7 @@ function expandNode<T extends GridNode>(
   gToNeighbor: (current: T, neighbor: T) => number,
   heuristic: (a: T, b: T) => number
 ) {
-  const neighbors = current.neighbors.filter(x => !x.blocked);
+  const neighbors = current.neighbors.filter((x) => !x.blocked);
 
   for (let i = 0; i < neighbors.length; i++) {
     const neighbor = neighbors[i];

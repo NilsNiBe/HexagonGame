@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Orientation } from "../models/Orientation";
-import { Point } from "../models/Point";
+import { Orientation } from "../models/orientation";
+import { Point } from "../models/point";
 
 export type Size = { x: number; y: number };
 
@@ -111,7 +111,7 @@ export function Layout({
   const orientation = flat ? LAYOUT_FLAT : LAYOUT_POINTY;
   const angle = flat ? 0 : Math.PI / 6;
   const cornerCoords = calculateCoordinates(size.x, angle);
-  const points = cornerCoords.map(point => `${point.x},${point.y}`).join(" ");
+  const points = cornerCoords.map((point) => `${point.x},${point.y}`).join(" ");
   const childLayout = Object.assign({}, rest, {
     orientation,
     size,

@@ -1,7 +1,7 @@
-import { GridNode } from "./GridNode";
-import HexagonTile, { HexCoordinates } from "./HexagonTile";
-import { Terrain, TerrainType } from "./terrain/Terrain";
-import { Coalition, Unit, UnitKind, UnitType } from "./units/Unit";
+import { GridNode } from "./gridNode";
+import HexagonTile, { HexCoordinates } from "./hexagonTile";
+import { Terrain, TerrainType } from "./terrain/terrain";
+import { Coalition, Unit, UnitKind, UnitType } from "./units/unit";
 
 export interface HexNode extends HexagonTile, GridNode {
   f: number;

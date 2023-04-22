@@ -5,7 +5,7 @@ import {
   createSimpleHexagonNodeGrid,
   HexagonNodeGrid,
   tileMapToHexagonGrid,
-} from "../models/HexagonNodeGrid";
+} from "../models/hexagonNodeGrid";
 import { getId, HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
 import {
@@ -13,7 +13,7 @@ import {
   Terrain,
   TerrainType,
   TERRAIN_TYPES,
-} from "../models/terrain/Terrain";
+} from "../models/terrain/terrain";
 import {
   GetUnit,
   UnitKind,
@@ -23,12 +23,12 @@ import {
   GetUnitColor,
   COALITIONS,
   Unit,
-} from "../models/units/Unit";
+  Coalition,
+} from "../models/units/unit";
 import Hexagon from "./Hexagon";
 import HexGrid from "./HexGrid";
 import Layout from "./Layout";
 import { UnitSvg } from "./UnitSvg";
-import { Coalition } from "../models/units/Unit";
 
 function createHexGrid(
   x: HexagonNodeGrid,

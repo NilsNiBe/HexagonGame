@@ -1,4 +1,4 @@
-import { GridNode } from "../models/GridNode";
+import { GridNode } from "../models/gridNode";
 
 export interface DijkstraNodeRes<T extends GridNode> {
   node: T;
