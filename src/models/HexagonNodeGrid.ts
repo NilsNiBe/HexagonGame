@@ -1,7 +1,13 @@
 import GridGenerator from "../services/gridService";
 import { neighbors } from "../services/HexService";
 import { HexCoordinatesEqual } from "./HexagonTile";
-import { createHexNode, createHexNodeSimple, createSimpleHexNode, HexNode, SimpleHexNode } from "./hexNode";
+import {
+  createHexNode,
+  createHexNodeSimple,
+  createSimpleHexNode,
+  HexNode,
+  SimpleHexNode,
+} from "./hexNode";
 import { TileMap } from "./maps/Map";
 import { randomTerrain, RandomUnit } from "./random";
 import { GetTerrain, Terrain } from "./terrain/Terrain";
@@ -19,7 +25,7 @@ export function createSimpleHexagonNodeGrid(
   grid: HexagonNodeGrid
 ): SimpleHexNodeGrid {
   return {
-    nodes: grid.nodes.map(x => createSimpleHexNode(x)),
+    nodes: grid.nodes.map((x) => createSimpleHexNode(x)),
   };
 }
 
@@ -28,7 +34,7 @@ function getNeighbors(x: HexNode, hexNodes: HexNode[]) {
   const potentialNeighbors = neighbors(x);
   for (let i = 0; i < potentialNeighbors.length; i++) {
     const neighbor = potentialNeighbors[i];
-    const hexNodesNeighborIndex = hexNodes.findIndex(node =>
+    const hexNodesNeighborIndex = hexNodes.findIndex((node) =>
       HexCoordinatesEqual(node, neighbor)
     );
     if (hexNodesNeighborIndex > -1) {
@@ -43,12 +49,16 @@ export function createRandomHexagonGrid(
   height: number
 ): HexagonNodeGrid {
   const hexagons = GridGenerator.orientedRectangle(width, height);
-  const hexNodes: HexNode[] = hexagons.map(x => {
+  const hexNodes: HexNode[] = hexagons.map((x) => {
     const terrain = randomTerrain();
     const unit = terrain.cost < Number.MAX_VALUE ? RandomUnit() : undefined;
-    return createHexNode(x, terrain, unit ? createUnit("Central", unit) : undefined);
+    return createHexNode(
+      x,
+      terrain,
+      unit ? createUnit("Central", unit) : undefined
+    );
   });
-  hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
+  hexNodes.forEach((x) => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
 }
 
@@ -58,17 +68,21 @@ export function createHexagonGrid(
   terrain: Terrain
 ): HexagonNodeGrid {
   const hexagons = GridGenerator.orientedRectangle(width, height);
-  const hexNodes: HexNode[] = hexagons.map(x => {
-    return createHexNode(x, terrain); 
+  const hexNodes: HexNode[] = hexagons.map((x) => {
+    return createHexNode(x, terrain);
   });
-  hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
+  hexNodes.forEach((x) => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
 }
 
 export function tileMapToHexagonGrid(m: TileMap): HexagonNodeGrid {
-  return {
-    nodes: m.nodes.map(x => {
-      return createHexNodeSimple(x, GetTerrain(x.t), x.u ? createUnit("Central",  GetUnit(x.u)) : undefined);
-    }),
-  };
+  const nodes = m.nodes.map((x) => {
+    return createHexNodeSimple(
+      x,
+      GetTerrain(x.t),
+      x.u ? createUnit(x.u.c, GetUnit(x.u.t)) : undefined
+    );
+  });
+  nodes.forEach((x) => (x.neighbors = getNeighbors(x, nodes)));
+  return { nodes };
 }

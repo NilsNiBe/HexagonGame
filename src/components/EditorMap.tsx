@@ -22,6 +22,7 @@ import {
   createUnit,
   GetUnitColor,
   COALITIONS,
+  Unit,
 } from "../models/units/Unit";
 import Hexagon from "./Hexagon";
 import HexGrid from "./HexGrid";
@@ -33,7 +34,7 @@ function createHexGrid(
   x: HexagonNodeGrid,
   hex: HexNode,
   terrain: Terrain,
-  unit?: UnitKind
+  unit?: Unit
 ): HexagonNodeGrid {
   return {
     ...x,
@@ -42,7 +43,7 @@ function createHexGrid(
         ? {
             ...x,
             terrain,
-            unit: unit ? createUnit("Central", unit) : undefined,
+            unit,
           }
         : x
     ),
@@ -185,12 +186,12 @@ export function EditorMap() {
                           );
                         } else {
                           setHexGrid((x) =>
-                            createHexGrid(x, hex, terrain, hex.unit?.kind)
+                            createHexGrid(x, hex, terrain, hex.unit)
                           );
                         }
                       } else {
                         setHexGrid((x) =>
-                          createHexGrid(x, hex, terrain, hex.unit?.kind)
+                          createHexGrid(x, hex, terrain, hex.unit)
                         );
                       }
                     } else if (UNIT_TYPES.includes(selected as UnitType)) {
@@ -207,7 +208,12 @@ export function EditorMap() {
                           );
                         } else {
                           setHexGrid((x) =>
-                            createHexGrid(x, hex, hex.terrain, unit)
+                            createHexGrid(x, hex, hex.terrain, {
+                              coalition: selectedCoalition,
+                              kind: unit,
+                              experience: 0,
+                              health: unit.size,
+                            })
                           );
                         }
                       }

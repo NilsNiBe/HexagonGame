@@ -3,6 +3,6 @@ import { Terrain } from "./Terrain";
 
 export const Forest: Terrain = {
   type: "Forrest",
-  cost: 4,
+  cost: 2,
   image: TerrainSvg.ForestSvg,
 };

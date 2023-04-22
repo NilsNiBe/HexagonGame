@@ -1,4 +1,4 @@
-import { SimpleHexNode } from "../HexNode";
+import { SimpleHexNode } from "../hexNode";
 
 export interface TileMap {
   name: string;
