@@ -1,7 +1,7 @@
 import { UnitSvg } from "../../../assets";
-import { Unit } from "../Unit";
+import { UnitKind } from "../Unit";
 
-export const HeavyArtillery: Unit = {
+export const HeavyArtillery: UnitKind = {
   type: "Heavy-Artillery",
   name: "Heavy Artillery",
   cost: 85,
@@ -12,7 +12,7 @@ export const HeavyArtillery: Unit = {
   speed: 1,
   weight: 5,
   size: 6,
-  allies: "Both",
+  canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.HeavyArtillerySvg,
   terrains: ["Street"],

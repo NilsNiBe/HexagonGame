@@ -1,7 +1,7 @@
 import { UnitSvg } from "../../../assets";
-import { Unit } from "../Unit";
+import { UnitKind } from "../Unit";
 
-export const EliteInfantry: Unit = {
+export const EliteInfantry: UnitKind = {
   type: "Elite-Infantry",
   name: "Elite Infantry",
   cost: 50,
@@ -12,7 +12,7 @@ export const EliteInfantry: Unit = {
   speed: 4,
   weight: 1,
   size: 6,
-  allies: "Both",
+  canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.EliteInfantrySvg,
   terrains: ["Forrest", "Mountain", "Plains", "Street"],

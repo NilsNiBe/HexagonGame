@@ -8,7 +8,7 @@ import {
   createRandomHexagonGrid,
   HexagonNodeGrid,
 } from "../models/HexagonNodeGrid";
-import { getId, HexNode } from "../models/HexNode";
+import { getId, HexNode } from "../models/hexNode";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/Dijkstra";
 import { distance, equals } from "../services/HexService";
@@ -152,7 +152,7 @@ export function GameMap() {
                         x={-24}
                         y={-20}
                         preserveAspectRatio="none"
-                        href={hex.unit.image ?? undefined}
+                        href={hex.unit.kind.image ?? undefined}
                       />
                     )}
                   </>

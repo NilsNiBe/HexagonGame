@@ -5,7 +5,7 @@ import { createHexNode, createHexNodeSimple, createSimpleHexNode, HexNode, Simpl
 import { TileMap } from "./maps/Map";
 import { randomTerrain, RandomUnit } from "./random";
 import { GetTerrain, Terrain } from "./terrain/Terrain";
-import { GetUnit } from "./units/Unit";
+import { createUnit, GetUnit } from "./units/Unit";
 
 export interface HexagonNodeGrid {
   nodes: HexNode[];
@@ -46,7 +46,7 @@ export function createRandomHexagonGrid(
   const hexNodes: HexNode[] = hexagons.map(x => {
     const terrain = randomTerrain();
     const unit = terrain.cost < Number.MAX_VALUE ? RandomUnit() : undefined;
-    return createHexNode(x, terrain, unit);
+    return createHexNode(x, terrain, unit ? createUnit("Central", unit) : undefined);
   });
   hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
@@ -68,7 +68,7 @@ export function createHexagonGrid(
 export function tileMapToHexagonGrid(m: TileMap): HexagonNodeGrid {
   return {
     nodes: m.nodes.map(x => {
-      return createHexNodeSimple(x, GetTerrain(x.t), x.u ? GetUnit(x.u) : undefined);
+      return createHexNodeSimple(x, GetTerrain(x.t), x.u ? createUnit("Central",  GetUnit(x.u)) : undefined);
     }),
   };
 }

@@ -6,7 +6,7 @@ import {
   HexagonNodeGrid,
   tileMapToHexagonGrid,
 } from "../models/HexagonNodeGrid";
-import { getId, HexNode } from "../models/HexNode";
+import { getId, HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
 import {
   GetTerrain,
@@ -14,10 +14,40 @@ import {
   TerrainType,
   TERRAIN_TYPES,
 } from "../models/terrain/Terrain";
-import { GetUnit, Unit, UnitType, UNIT_TYPES } from "../models/units/Unit";
+import {
+  GetUnit,
+  UnitKind,
+  UnitType,
+  UNIT_TYPES,
+  createUnit,
+  GetUnitColor,
+  COALITIONS,
+} from "../models/units/Unit";
 import Hexagon from "./Hexagon";
 import HexGrid from "./HexGrid";
 import Layout from "./Layout";
+import { UnitSvg } from "./UnitSvg";
+import { Coalition } from "../models/units/Unit";
+
+function createHexGrid(
+  x: HexagonNodeGrid,
+  hex: HexNode,
+  terrain: Terrain,
+  unit?: UnitKind
+): HexagonNodeGrid {
+  return {
+    ...x,
+    nodes: x.nodes.map((x) =>
+      x === hex
+        ? {
+            ...x,
+            terrain,
+            unit: unit ? createUnit("Central", unit) : undefined,
+          }
+        : x
+    ),
+  };
+}
 
 export function EditorMap() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
@@ -29,6 +59,8 @@ export function EditorMap() {
   const [selected, setSelected] = React.useState<
     TerrainType | UnitType | undefined
   >(undefined);
+  const [selectedCoalition, setSelectedCoalition] =
+    React.useState<Coalition>("Central");
 
   const cellStyle = {
     // fill: COLORS.orange[0],
@@ -36,31 +68,11 @@ export function EditorMap() {
     // strokeWidth: 0.0,
   };
 
-  function createHexGrid(
-    x: HexagonNodeGrid,
-    hex: HexNode,
-    terrain: Terrain,
-    unit?: Unit
-  ): HexagonNodeGrid {
-    return {
-      ...x,
-      nodes: x.nodes.map(x =>
-        x === hex
-          ? {
-              ...x,
-              terrain,
-              unit,
-            }
-          : x
-      ),
-    };
-  }
-
   return (
     <>
       <div>
         <div>
-          {TERRAIN_TYPES.map(x => (
+          {TERRAIN_TYPES.map((x) => (
             <label>
               <input
                 type="radio"
@@ -68,14 +80,14 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={e => setSelected(e.target.value as TerrainType)}
+                onChange={(e) => setSelected(e.target.value as TerrainType)}
               />
               {x}
             </label>
           ))}
         </div>
         <div>
-          {UNIT_TYPES.map(x => (
+          {UNIT_TYPES.map((x) => (
             <label>
               <input
                 type="radio"
@@ -83,7 +95,7 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={e => setSelected(e.target.value as UnitType)}
+                onChange={(e) => setSelected(e.target.value as UnitType)}
               />
               {x}
             </label>
@@ -95,10 +107,27 @@ export function EditorMap() {
               id="NoUnit"
               value={undefined}
               checked={selected === undefined}
-              onChange={e => setSelected(undefined)}
+              onChange={(e) => setSelected(undefined)}
             />
             No Unit
           </label>
+        </div>
+        <div>
+          {COALITIONS.map((x) => (
+            <label>
+              <input
+                type="radio"
+                key={x}
+                id={x}
+                value={x}
+                checked={selectedCoalition === x}
+                onChange={(e) =>
+                  setSelectedCoalition(e.target.value as Coalition)
+                }
+              />
+              {x}
+            </label>
+          ))}
         </div>
         <button
           onClick={() =>
@@ -107,7 +136,6 @@ export function EditorMap() {
         >
           Print Map to Console
         </button>
-        {/* <text>{selected ? (selected as any) : ""}</text> */}
       </div>
       <HexGrid width={1800} height={1040} viewBox="-30 -30 1800 1040">
         <Layout
@@ -117,7 +145,7 @@ export function EditorMap() {
           origin={{ x: 0, y: 0 }}
         >
           <>
-            {hexGrid.nodes.map(hex => {
+            {hexGrid.nodes.map((hex) => {
               return (
                 <Hexagon
                   key={getId(hex)}
@@ -136,13 +164,13 @@ export function EditorMap() {
                         : hex.terrain?.type === "Forrest"
                         ? COLORS.green[5]
                         : hex.terrain?.type === "Plains"
-                        ? COLORS.green[6]
+                        ? COLORS.green[5]
                         : COLORS.dark[9],
                   }}
                   onClick={() => {
                     if (selected === undefined) {
                       if (hex.unit !== undefined) {
-                        setHexGrid(x =>
+                        setHexGrid((x) =>
                           createHexGrid(x, hex, hex.terrain, undefined)
                         );
                       }
@@ -151,18 +179,18 @@ export function EditorMap() {
                     ) {
                       const terrain = GetTerrain(selected as TerrainType);
                       if (hex.unit !== undefined) {
-                        if (!hex.unit.terrains.includes(terrain.type)) {
-                          setHexGrid(x =>
+                        if (!hex.unit.kind.terrains.includes(terrain.type)) {
+                          setHexGrid((x) =>
                             createHexGrid(x, hex, terrain, undefined)
                           );
                         } else {
-                          setHexGrid(x =>
-                            createHexGrid(x, hex, terrain, hex.unit)
+                          setHexGrid((x) =>
+                            createHexGrid(x, hex, terrain, hex.unit?.kind)
                           );
                         }
                       } else {
-                        setHexGrid(x =>
-                          createHexGrid(x, hex, terrain, hex.unit)
+                        setHexGrid((x) =>
+                          createHexGrid(x, hex, terrain, hex.unit?.kind)
                         );
                       }
                     } else if (UNIT_TYPES.includes(selected as UnitType)) {
@@ -170,12 +198,15 @@ export function EditorMap() {
                       if (
                         unit.terrains.includes(hex.terrain?.type ?? "Water")
                       ) {
-                        if (hex.unit === unit) {
-                          setHexGrid(x =>
+                        if (
+                          hex.unit?.kind === unit &&
+                          hex.unit.coalition === selectedCoalition
+                        ) {
+                          setHexGrid((x) =>
                             createHexGrid(x, hex, hex.terrain, undefined)
                           );
                         } else {
-                          setHexGrid(x =>
+                          setHexGrid((x) =>
                             createHexGrid(x, hex, hex.terrain, unit)
                           );
                         }
@@ -190,22 +221,21 @@ export function EditorMap() {
                         height="3.8%"
                         x={-24}
                         y={-20}
-                        preserveAspectRatio="none"
                         href={hex.terrain.image ?? undefined}
                       />
                     )}
                     {hex.unit && (
-                      <image
+                      <UnitSvg
+                        type={hex.unit.kind.type}
                         width="2.5%"
                         height="4%"
+                        fill={GetUnitColor(hex.unit)}
+                        stroke={GetUnitColor(hex.unit)}
                         x={-24}
                         y={-20}
-                        preserveAspectRatio="none"
-                        href={hex.unit.image ?? undefined}
                       />
                     )}
                   </>
-                  {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
                 </Hexagon>
               );
             })}

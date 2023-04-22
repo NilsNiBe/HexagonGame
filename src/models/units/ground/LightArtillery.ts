@@ -1,7 +1,7 @@
 import { UnitSvg } from "../../../assets";
-import { Unit } from "../Unit";
+import { UnitKind } from "../Unit";
 
-export const LightArtillery: Unit = {
+export const LightArtillery: UnitKind = {
   type: "Light-Artillery",
   name: "Light Artillery",
   cost: 55,
@@ -12,7 +12,7 @@ export const LightArtillery: Unit = {
   speed: 2,
   weight: 3,
   size: 6,
-  allies: "Both",
+  canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.LightArtillerySvg,
   terrains: ["Forrest", "Mountain", "Plains", "Street"],

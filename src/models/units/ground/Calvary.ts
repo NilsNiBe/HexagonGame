@@ -1,7 +1,7 @@
 import { UnitSvg } from "../../../assets";
-import { Unit } from "../Unit";
+import { UnitKind } from "../Unit";
 
-export const Cavalry: Unit = {
+export const Cavalry: UnitKind = {
   type: "Cavalry",
   name: "Cavalry",
   cost: 50,
@@ -12,7 +12,7 @@ export const Cavalry: Unit = {
   speed: 6,
   weight: 2,
   size: 6,
-  allies: "Both",
+  canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.CavalrySvg,
   terrains: ["Forrest", "Mountain", "Plains", "Street"],

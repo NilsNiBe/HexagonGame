@@ -1,7 +1,7 @@
 import { GridNode } from "./GridNode";
 import HexagonTile, { HexCoordinates } from "./HexagonTile";
 import { Terrain, TerrainType } from "./terrain/Terrain";
-import { Unit, UnitType } from "./units/Unit";
+import { Unit, UnitKind, UnitType } from "./units/Unit";
 
 export interface HexNode extends HexagonTile, GridNode {
   f: number;
@@ -60,6 +60,6 @@ export function createSimpleHexNode(h: HexNode): SimpleHexNode {
     q: h.q,
     r: h.r,
     t: h.terrain?.type,
-    u: h.unit?.type,
+    u: h.unit?.kind.type,
   };
 }
