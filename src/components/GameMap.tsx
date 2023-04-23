@@ -1,14 +1,14 @@
 import React from "react";
 import "../App.css";
 import { COLORS } from "../assets/colors";
-import Hexagon from "../components/Hexagon";
 import HexGrid from "../components/HexGrid";
+import Hexagon from "../components/Hexagon";
 import Layout from "../components/Layout";
+import { HexNode, getId } from "../models/hexNode";
 import {
   HexagonNodeGrid,
   tileMapToHexagonGrid,
 } from "../models/hexagonNodeGrid";
-import { getId, HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
 import { GetUnitColor } from "../models/units/unit";
 import { runAStar } from "../services/aStarService";
@@ -139,7 +139,7 @@ export function GameMap() {
                   if (equals(startHex, hex)) {
                     setStartHex(undefined);
                   } else if (!hex.blocked) {
-                    if (startHex === undefined) {
+                    if (startHex === undefined && hex.unit !== undefined) {
                       setStartHex(hex);
                     } else if (
                       startHex !== undefined &&
