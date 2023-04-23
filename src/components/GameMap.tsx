@@ -5,7 +5,6 @@ import Hexagon from "../components/Hexagon";
 import HexGrid from "../components/HexGrid";
 import Layout from "../components/Layout";
 import {
-  createRandomHexagonGrid,
   HexagonNodeGrid,
   tileMapToHexagonGrid,
 } from "../models/hexagonNodeGrid";
@@ -16,6 +15,8 @@ import { distance, equals } from "../services/hexService";
 import { UnitSvg } from "./UnitSvg";
 import { GetUnitColor } from "../models/units/unit";
 import { PULSE } from "../models/maps/central/pulse";
+import { TerrainSvg } from "./TerrainSvg";
+import "./Terrain.css";
 
 export function GameMap() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
@@ -171,16 +172,7 @@ export function GameMap() {
                 }}
               >
                 <>
-                  {hex.terrain && (
-                    <image
-                      width="2.6%"
-                      height="3.8%"
-                      x={-24}
-                      y={-20}
-                      preserveAspectRatio="none"
-                      href={hex.terrain.image ?? undefined}
-                    />
-                  )}
+                  {hex.terrain && <TerrainSvg type={hex.terrain.type} />}
                   {hex.unit && (
                     <UnitSvg
                       type={hex.unit.kind.type}

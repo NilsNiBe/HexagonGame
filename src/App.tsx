@@ -2,15 +2,14 @@ import React from "react";
 import "./App.css";
 import { EditorMap } from "./components/EditorMap";
 import { GameMap } from "./components/GameMap";
-
-type page = "game" | "editor";
+import { MainMenu } from "./components/MainMenu";
+import { Game } from "./components/Game";
 
 function App() {
-  const [page, setPage] = React.useState<page>("editor");
-
   return (
     <div className="App">
-      <div>
+      <Game />
+      {/* <div>
         <label>
           <input
             type="radio"
@@ -32,7 +31,7 @@ function App() {
           Game
         </label>
       </div>
-      {page === "editor" ? <EditorMap /> : <GameMap />}
+      {page === "editor" ? <EditorMap /> : <GameMap />} */}
     </div>
   );
 }

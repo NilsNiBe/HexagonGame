@@ -29,6 +29,7 @@ import Hexagon from "./Hexagon";
 import HexGrid from "./HexGrid";
 import Layout from "./Layout";
 import { UnitSvg } from "./UnitSvg";
+import { TerrainSvg } from "./TerrainSvg";
 
 function createHexGrid(
   x: HexagonNodeGrid,
@@ -222,12 +223,14 @@ export function EditorMap() {
                 >
                   <>
                     {hex.terrain && (
-                      <image
+                      <TerrainSvg
+                        key={"terrain" + getId(hex)}
+                        id={"terrain" + getId(hex)}
+                        type={hex.terrain.type}
                         width="2.6%"
                         height="3.8%"
                         x={-24}
                         y={-20}
-                        href={hex.terrain.image ?? undefined}
                       />
                     )}
                     {hex.unit && (
