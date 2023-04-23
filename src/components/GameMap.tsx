@@ -73,7 +73,7 @@ export function GameMap() {
         x.predecessor = undefined;
       });
 
-      const res = runAStar(startHex, endHex, (c, n) => n.weight ?? 1, distance);
+      const res = runAStar(startHex, endHex, (_, n) => n.weight ?? 1, distance);
 
       setFoundPath(res);
     } else {
@@ -138,7 +138,28 @@ export function GameMap() {
                   if (equals(startHex, hex)) {
                     setStartHex(undefined);
                   } else if (!hex.blocked) {
-                    setStartHex(hex);
+                    if (startHex === undefined) {
+                      setStartHex(hex);
+                    } else if (
+                      startHex !== undefined &&
+                      hex.unit === undefined
+                    ) {
+                      const startHexUnit = startHex.unit;
+                      setHexGrid((x) => ({
+                        ...x,
+                        nodes: x.nodes.map((n) => {
+                          if (n === hex) {
+                            n.unit = startHexUnit;
+                            return n;
+                          } else if (n === startHex) {
+                            startHex.unit = undefined;
+                            return startHex;
+                          }
+                          return n;
+                        }),
+                      }));
+                      setStartHex(undefined);
+                    }
                   }
                 }}
                 onMouseEnter={() => {
