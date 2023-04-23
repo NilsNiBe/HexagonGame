@@ -9,14 +9,14 @@ import {
   tileMapToHexagonGrid,
 } from "../models/hexagonNodeGrid";
 import { getId, HexNode } from "../models/hexNode";
+import { PULSE } from "../models/maps/central/pulse";
+import { GetUnitColor } from "../models/units/unit";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/dijkstra";
 import { distance, equals } from "../services/hexService";
-import { UnitSvg } from "./UnitSvg";
-import { GetUnitColor } from "../models/units/unit";
-import { PULSE } from "../models/maps/central/pulse";
-import { TerrainSvg } from "./TerrainSvg";
 import "./Terrain.css";
+import { TerrainSvg } from "./TerrainSvg";
+import { UnitSvg } from "./UnitSvg";
 
 export function GameMap() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
@@ -51,8 +51,8 @@ export function GameMap() {
       );
 
       const reachable = res
-        .filter((x) => x.cost < Number.MAX_VALUE)
-        .map((x) => x.node);
+        .filter(x => x.cost < Number.MAX_VALUE)
+        .map(x => x.node);
 
       setReachable(reachable);
     } else {
@@ -67,7 +67,7 @@ export function GameMap() {
       endHex !== undefined &&
       reachable?.includes(endHex)
     ) {
-      hexGrid.nodes.forEach((x) => {
+      hexGrid.nodes.forEach(x => {
         x.f = 0;
         x.g = 0;
         x.h = undefined;
@@ -92,12 +92,12 @@ export function GameMap() {
         origin={{ x: 0, y: 0 }}
       >
         <>
-          {hexGrid.nodes.map((hex) => {
-            const isPath = foundPath?.find((x) => equals(x, hex)) !== undefined;
+          {hexGrid.nodes.map(hex => {
+            const isPath = foundPath?.find(x => equals(x, hex)) !== undefined;
             const isReachable =
               reachable === undefined
                 ? true
-                : reachable?.find((x) => equals(x, hex)) !== undefined;
+                : reachable?.find(x => equals(x, hex)) !== undefined;
 
             return (
               <Hexagon
@@ -143,12 +143,13 @@ export function GameMap() {
                       setStartHex(hex);
                     } else if (
                       startHex !== undefined &&
-                      hex.unit === undefined
+                      hex.unit === undefined &&
+                      reachable?.includes(hex)
                     ) {
                       const startHexUnit = startHex.unit;
-                      setHexGrid((x) => ({
+                      setHexGrid(x => ({
                         ...x,
-                        nodes: x.nodes.map((n) => {
+                        nodes: x.nodes.map(n => {
                           if (n === hex) {
                             n.unit = startHexUnit;
                             return n;
