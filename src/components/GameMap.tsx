@@ -141,9 +141,9 @@ export function GameMap() {
                 hex.blocked || hex.weight === Number.MAX_VALUE
                   ? 0
                   : equals(startHex, hex)
-                  ? 5
+                  ? 1
                   : isPath
-                  ? 5
+                  ? 1
                   : 0,
             }}
             onClick={() => {
@@ -185,7 +185,11 @@ export function GameMap() {
           >
             <>
               {hex.terrain && (
-                <TerrainSvg type={hex.terrain.type} size={size} />
+                <TerrainSvg
+                  type={hex.terrain.type}
+                  size={size}
+                  opacity={isReachable ? 1 : 0.3}
+                />
               )}
               {hex.unit && (
                 <UnitSvg

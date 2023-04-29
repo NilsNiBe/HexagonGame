@@ -1,8 +1,11 @@
-export const Mountain = (props: { size: number }) => {
-  const { size } = props;
+export const Mountain = (
+  props: { size: number } & React.SVGProps<SVGSVGElement>
+) => {
+  const { size, opacity } = props;
   return (
     <g
       id="mountain-sides"
+      opacity={opacity}
       transform={`scale(${(2 * size) / 100}) translate(-50, -43.3)`}
     >
       <polygon className="light-mountain" points="25,0 50,43.3 0,43.3" />

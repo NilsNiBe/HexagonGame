@@ -1,8 +1,13 @@
-export const Water = (props: { size: number }) => {
-  const { size } = props;
+export const Water = (
+  props: { size: number } & React.SVGProps<SVGSVGElement>
+) => {
+  const { size, opacity } = props;
 
   return (
-    <g transform={`scale(${(2 * size) / 100}) translate(-50, -43.3)`}>
+    <g
+      transform={`scale(${(2 * size) / 100}) translate(-50, -43.3)`}
+      opacity={opacity}
+    >
       <g fill="none" stroke-linecap="round">
         <path
           className="wave-water"
