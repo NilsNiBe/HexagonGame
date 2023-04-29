@@ -7,7 +7,7 @@ import { Water } from "./water";
 export const TERRAIN_TYPES = [
   "Street",
   "Plains",
-  "Forrest",
+  "Forest",
   "Mountain",
   "Water",
 ] as const;
@@ -26,7 +26,7 @@ export function GetTerrain(type: TerrainType) {
       return Street;
     case "Plains":
       return Plains;
-    case "Forrest":
+    case "Forest":
       return Forest;
     case "Mountain":
       return Mountain;

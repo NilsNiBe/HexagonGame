@@ -8,6 +8,7 @@ import {
 } from "../models/hexagonNodeGrid";
 import { getId, HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
+import { getOrientation } from "../models/orientation";
 import {
   GetTerrain,
   Terrain,
@@ -15,21 +16,20 @@ import {
   TERRAIN_TYPES,
 } from "../models/terrain/terrain";
 import {
+  Coalition,
+  COALITIONS,
   GetUnit,
-  UnitKind,
+  GetUnitColor,
+  Unit,
   UnitType,
   UNIT_TYPES,
-  createUnit,
-  GetUnitColor,
-  COALITIONS,
-  Unit,
-  Coalition,
 } from "../models/units/unit";
+import { hexToPixel } from "../services/hexService";
 import Hexagon from "./Hexagon";
 import HexGrid from "./HexGrid";
-import Layout from "./Layout";
-import { UnitSvg } from "./UnitSvg";
+import { LayoutDimension } from "./Layout";
 import { TerrainSvg } from "./TerrainSvg";
+import { UnitSvg } from "./UnitSvg";
 
 function createHexGrid(
   x: HexagonNodeGrid,
@@ -39,7 +39,7 @@ function createHexGrid(
 ): HexagonNodeGrid {
   return {
     ...x,
-    nodes: x.nodes.map((x) =>
+    nodes: x.nodes.map(x =>
       x === hex
         ? {
             ...x,
@@ -70,11 +70,24 @@ export function EditorMap() {
     // strokeWidth: 0.0,
   };
 
+  const size = 25;
+  const layout: LayoutDimension = {
+    size: { x: size, y: size },
+    orientation: getOrientation("flat"),
+    spacing: 1.02,
+    origin: { x: 0, y: 0 },
+  };
+  const pixel = hexGrid.nodes.map(x => hexToPixel(x, layout));
+  const xMin = Math.min(...pixel.map(p => p.x));
+  const xMax = Math.max(...pixel.map(p => p.x));
+  const yMin = Math.min(...pixel.map(p => p.y));
+  const yMax = Math.max(...pixel.map(p => p.y));
+
   return (
     <>
       <div>
         <div>
-          {TERRAIN_TYPES.map((x) => (
+          {TERRAIN_TYPES.map(x => (
             <label>
               <input
                 type="radio"
@@ -82,14 +95,14 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={(e) => setSelected(e.target.value as TerrainType)}
+                onChange={e => setSelected(e.target.value as TerrainType)}
               />
               {x}
             </label>
           ))}
         </div>
         <div>
-          {UNIT_TYPES.map((x) => (
+          {UNIT_TYPES.map(x => (
             <label>
               <input
                 type="radio"
@@ -97,7 +110,7 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={(e) => setSelected(e.target.value as UnitType)}
+                onChange={e => setSelected(e.target.value as UnitType)}
               />
               {x}
             </label>
@@ -109,13 +122,13 @@ export function EditorMap() {
               id="NoUnit"
               value={undefined}
               checked={selected === undefined}
-              onChange={(e) => setSelected(undefined)}
+              onChange={e => setSelected(undefined)}
             />
             No Unit
           </label>
         </div>
         <div>
-          {COALITIONS.map((x) => (
+          {COALITIONS.map(x => (
             <label>
               <input
                 type="radio"
@@ -123,7 +136,7 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selectedCoalition === x}
-                onChange={(e) =>
+                onChange={e =>
                   setSelectedCoalition(e.target.value as Coalition)
                 }
               />
@@ -139,117 +152,100 @@ export function EditorMap() {
           Print Map to Console
         </button>
       </div>
-      <HexGrid width={1800} height={1040} viewBox="-30 -30 1800 1040">
-        <Layout
-          size={{ x: 24, y: 24 }}
-          flat={true}
-          spacing={1.05}
-          origin={{ x: 0, y: 0 }}
-        >
-          <>
-            {hexGrid.nodes.map((hex) => {
-              return (
-                <Hexagon
-                  key={getId(hex)}
-                  q={hex.q}
-                  r={hex.r}
-                  s={hex.s}
-                  cellStyle={{
-                    ...cellStyle,
-                    fill:
-                      hex.terrain?.type === "Water"
-                        ? COLORS.blue[5]
-                        : hex.terrain?.type === "Mountain"
-                        ? COLORS.green[3]
-                        : hex.terrain?.type === "Street"
-                        ? COLORS.gray[5]
-                        : hex.terrain?.type === "Forrest"
-                        ? COLORS.green[5]
-                        : hex.terrain?.type === "Plains"
-                        ? COLORS.green[5]
-                        : COLORS.dark[9],
-                  }}
-                  onClick={() => {
-                    if (selected === undefined) {
-                      if (hex.unit !== undefined) {
-                        setHexGrid((x) =>
-                          createHexGrid(x, hex, hex.terrain, undefined)
+      <HexGrid
+        style={{ display: "flex" }}
+        width={xMax + 2 * size}
+        height={yMax + 2 * size}
+        viewBox={`${xMin} ${yMin} ${xMax + 2 * size} ${yMax + 2 * size}`}
+      >
+        <>
+          {hexGrid.nodes.map(hex => {
+            return (
+              <Hexagon
+                hex={hex}
+                layout={layout}
+                key={getId(hex)}
+                cellStyle={{
+                  ...cellStyle,
+                  fill:
+                    hex.terrain?.type === "Water"
+                      ? COLORS.blue[5]
+                      : hex.terrain?.type === "Mountain"
+                      ? COLORS.green[3]
+                      : hex.terrain?.type === "Street"
+                      ? COLORS.gray[5]
+                      : hex.terrain?.type === "Forest"
+                      ? COLORS.green[5]
+                      : hex.terrain?.type === "Plains"
+                      ? COLORS.green[5]
+                      : COLORS.dark[9],
+                }}
+                onClick={() => {
+                  if (selected === undefined) {
+                    if (hex.unit !== undefined) {
+                      setHexGrid(x =>
+                        createHexGrid(x, hex, hex.terrain, undefined)
+                      );
+                    }
+                  } else if (TERRAIN_TYPES.includes(selected as TerrainType)) {
+                    const terrain = GetTerrain(selected as TerrainType);
+                    if (hex.unit !== undefined) {
+                      if (!hex.unit.kind.terrains.includes(terrain.type)) {
+                        setHexGrid(x =>
+                          createHexGrid(x, hex, terrain, undefined)
                         );
-                      }
-                    } else if (
-                      TERRAIN_TYPES.includes(selected as TerrainType)
-                    ) {
-                      const terrain = GetTerrain(selected as TerrainType);
-                      if (hex.unit !== undefined) {
-                        if (!hex.unit.kind.terrains.includes(terrain.type)) {
-                          setHexGrid((x) =>
-                            createHexGrid(x, hex, terrain, undefined)
-                          );
-                        } else {
-                          setHexGrid((x) =>
-                            createHexGrid(x, hex, terrain, hex.unit)
-                          );
-                        }
                       } else {
-                        setHexGrid((x) =>
+                        setHexGrid(x =>
                           createHexGrid(x, hex, terrain, hex.unit)
                         );
                       }
-                    } else if (UNIT_TYPES.includes(selected as UnitType)) {
-                      const unit = GetUnit(selected as UnitType);
+                    } else {
+                      setHexGrid(x => createHexGrid(x, hex, terrain, hex.unit));
+                    }
+                  } else if (UNIT_TYPES.includes(selected as UnitType)) {
+                    const unit = GetUnit(selected as UnitType);
+                    if (unit.terrains.includes(hex.terrain?.type ?? "Water")) {
                       if (
-                        unit.terrains.includes(hex.terrain?.type ?? "Water")
+                        hex.unit?.kind === unit &&
+                        hex.unit.coalition === selectedCoalition
                       ) {
-                        if (
-                          hex.unit?.kind === unit &&
-                          hex.unit.coalition === selectedCoalition
-                        ) {
-                          setHexGrid((x) =>
-                            createHexGrid(x, hex, hex.terrain, undefined)
-                          );
-                        } else {
-                          setHexGrid((x) =>
-                            createHexGrid(x, hex, hex.terrain, {
-                              coalition: selectedCoalition,
-                              kind: unit,
-                              experience: 0,
-                              health: unit.size,
-                            })
-                          );
-                        }
+                        setHexGrid(x =>
+                          createHexGrid(x, hex, hex.terrain, undefined)
+                        );
+                      } else {
+                        setHexGrid(x =>
+                          createHexGrid(x, hex, hex.terrain, {
+                            coalition: selectedCoalition,
+                            kind: unit,
+                            experience: 0,
+                            health: unit.size,
+                          })
+                        );
                       }
                     }
-                  }}
-                >
-                  <>
-                    {hex.terrain && (
-                      <TerrainSvg
-                        key={"terrain" + getId(hex)}
-                        id={"terrain" + getId(hex)}
-                        type={hex.terrain.type}
-                        width="2.6%"
-                        height="3.8%"
-                        x={-24}
-                        y={-20}
-                      />
-                    )}
-                    {hex.unit && (
-                      <UnitSvg
-                        type={hex.unit.kind.type}
-                        width="2.5%"
-                        height="4%"
-                        fill={GetUnitColor(hex.unit)}
-                        stroke={GetUnitColor(hex.unit)}
-                        x={-24}
-                        y={-20}
-                      />
-                    )}
-                  </>
-                </Hexagon>
-              );
-            })}
-          </>
-        </Layout>
+                  }
+                }}
+              >
+                <>
+                  {hex.terrain && (
+                    <TerrainSvg type={hex.terrain.type} size={size} />
+                  )}
+                  {hex.unit && (
+                    <UnitSvg
+                      type={hex.unit.kind.type}
+                      width="8%"
+                      height="8%"
+                      fill={GetUnitColor(hex.unit)}
+                      stroke={GetUnitColor(hex.unit)}
+                      x={-24}
+                      y={-40}
+                    />
+                  )}
+                </>
+              </Hexagon>
+            );
+          })}
+        </>
       </HexGrid>
     </>
   );

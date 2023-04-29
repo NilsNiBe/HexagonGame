@@ -1,7 +1,7 @@
 import React from "react";
-import { MainMenu } from "./MainMenu";
 import { EditorMap } from "./EditorMap";
 import { GameMap } from "./GameMap";
+import { MainMenu } from "./MainMenu";
 import { TopBar } from "./TopBar";
 
 export type Page = "main-menu" | "game" | "editor";

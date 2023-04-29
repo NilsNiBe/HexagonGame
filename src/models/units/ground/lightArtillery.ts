@@ -15,5 +15,5 @@ export const LightArtillery: UnitKind = {
   canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.LightArtillerySvg,
-  terrains: ["Forrest", "Mountain", "Plains", "Street"],
+  terrains: ["Forest", "Mountain", "Plains", "Street"],
 };

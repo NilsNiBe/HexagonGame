@@ -1,5 +1,5 @@
 import { LayoutDimension } from "../components/Layout";
-import { HexagonTile, HexCoordinates } from "../models/hexagonTile";
+import { HexCoordinates } from "../models/hexagonTile";
 import { Point } from "../models/point";
 
 export const DIRECTIONS: HexCoordinates[] = [
@@ -85,7 +85,7 @@ export function direction(direction: number): HexCoordinates {
 /**
  * Returns a Hex which is in the given direction.
  * @param {HexagonTile} hex - starting hex
- * @param {number} direction - number representing the direction
+ * @param {number} directionNumber - number representing the direction
  * @returns {HexagonTile} Hex which is adjacent in the given direction
  */
 export function neighbor(

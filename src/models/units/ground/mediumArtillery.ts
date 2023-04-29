@@ -15,5 +15,5 @@ export const MediumArtillery: UnitKind = {
   canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.MediumArtillerySvg,
-  terrains: ["Forrest", "Plains", "Street"],
+  terrains: ["Forest", "Plains", "Street"],
 };

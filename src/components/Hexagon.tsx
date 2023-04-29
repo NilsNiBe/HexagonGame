@@ -4,9 +4,9 @@ import { COLORS } from "../assets/colors";
 import HexagonTile from "../models/hexagonTile";
 import Point from "../models/point";
 import { hexToPixel } from "../services/hexService";
-import { useLayoutContext } from "./Layout";
+import { calculateCoordinates, LayoutDimension } from "./Layout";
 
-type H = { data?: any; state: { hex: HexagonTile }; props: HexagonProps };
+type H = { data?: any; hex: HexagonTile; props: HexagonProps };
 
 export type HexagonDragEventHandler<T = Element, AdditionalData = any> = (
   event: React.DragEvent<T>,
@@ -26,9 +26,8 @@ export type HexagonMouseEventHandler<T = SVGGElement> = (
 ) => void;
 
 export type HexagonProps = {
-  q: number;
-  r: number;
-  s: number;
+  hex: HexagonTile;
+  layout: LayoutDimension;
   fill?: string;
   className?: string;
   cellStyle?: React.CSSProperties | undefined;
@@ -73,9 +72,8 @@ export function Hexagon(
 ) {
   // destructure props into their values
   const {
-    q,
-    r,
-    s,
+    hex,
+    layout,
     fill,
     cellStyle,
     className,
@@ -95,46 +93,30 @@ export function Hexagon(
 
   const [isMouseOver, setIsMouseOver] = React.useState(false);
 
-  const { layout, points } = useLayoutContext();
-
-  const svgRef = React.useRef<SVGElement>(null);
-
-  const { hex, pixel } = React.useMemo(() => {
-    const hex = { q, r, s, blocked: false };
-    const pixel = hexToPixel(hex, layout);
-    return {
-      hex,
-      pixel,
-    };
-  }, [q, r, s, layout]);
-
-  // for backwards compatibility
-  const state = { hex };
-
   const fillId = fill ? `url(#${fill})` : undefined;
   const draggable = { draggable: true } as any;
   const cellStyleModified = {
     ...cellStyle,
     stroke: isMouseOver ? COLORS.red[5] : cellStyle?.stroke,
-    strokeWidth: isMouseOver ? "5" : cellStyle?.strokeWidth,
+    strokeWidth: isMouseOver ? 1.5 : cellStyle?.strokeWidth,
   };
 
-  // const buildWall = (e: React.MouseEvent<SVGGElement>) => {
-  //   if (e.ctrlKey && e.button === 0) {
-  //     if (props.onCtrlMouseClick) {
-  //       props.onCtrlMouseClick(e, { data, state, props });
-  //     }
-  //   }
-  // };
+  const pixel = hexToPixel(hex, layout);
+
+  const angle = layout.orientation ? 0 : Math.PI / 6;
+  const cornerCoords = calculateCoordinates(layout.size.x, angle);
+
+  const points = cornerCoords.map(point => `${point.x},${point.y}`).join(" ");
 
   return (
     <g
-      ref={svgRef}
       className={classNames("hexagon-group", className)}
-      transform={`translate(${pixel.x}, ${pixel.y})`}
+      transform={`translate(${pixel.x + layout.size.x}, ${
+        pixel.y + layout.size.y
+      })`}
       {...rest}
       {...draggable}
-      onDragStart={(e) => {
+      onDragStart={e => {
         if (onDragStart) {
           const targetProps: TargetProps = {
             hex: hex,
@@ -144,51 +126,51 @@ export function Hexagon(
             className: className,
           };
           e.dataTransfer.setData("hexagon", JSON.stringify(targetProps));
-          onDragStart(e, { data, state, props });
+          onDragStart(e, { data, hex, props });
         }
       }}
-      onDragEnd={(e) => {
+      onDragEnd={e => {
         if (onDragEnd) {
           e.preventDefault();
           const success = e.dataTransfer.dropEffect !== "none";
-          onDragEnd(e, { state, props }, success);
+          onDragEnd(e, { hex, props }, success);
         }
       }}
-      onDrop={(e) => {
+      onDrop={e => {
         if (onDrop) {
           e.preventDefault();
           const target = JSON.parse(e.dataTransfer.getData("hexagon"));
-          onDrop(e, { data, state, props }, target);
+          onDrop(e, { data, hex, props }, target);
         }
       }}
-      onDragOver={(e) => {
+      onDragOver={e => {
         if (onDragOver) {
-          onDragOver(e, { data, state, props });
+          onDragOver(e, { data, hex, props });
         }
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={e => {
         setIsMouseOver(true);
         if (onMouseEnter) {
-          onMouseEnter(e, { data, state, props });
+          onMouseEnter(e, { data, hex, props });
         }
       }}
-      onClick={(e) => {
+      onClick={e => {
         if (onClick) {
-          onClick(e, { data, state, props });
+          onClick(e, { data, hex, props });
         }
       }}
-      onMouseOver={(e) => {
+      onMouseOver={e => {
         if (onMouseOver) {
-          onMouseOver(e, { data, state, props });
+          onMouseOver(e, { data, hex, props });
         }
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={e => {
         setIsMouseOver(false);
         if (onMouseLeave) {
-          onMouseLeave(e, { data, state, props });
+          onMouseLeave(e, { data, hex, props });
         }
       }}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.ctrlKey) {
         }
       }}

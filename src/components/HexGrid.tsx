@@ -13,9 +13,9 @@ type Props = {} & React.SVGProps<SVGSVGElement>;
  * @returns
  */
 export function HexGrid({
-  width = 800,
-  height = 600,
-  viewBox = "-50 -50 100 100",
+  width = undefined,
+  height = undefined,
+  viewBox = undefined,
   ...props
 }: Props) {
   return (

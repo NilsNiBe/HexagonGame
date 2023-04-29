@@ -15,5 +15,5 @@ export const Infantry: UnitKind = {
   canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.InfantrySvg,
-  terrains: ["Forrest", "Mountain", "Plains", "Street"],
+  terrains: ["Forest", "Mountain", "Plains", "Street"],
 };

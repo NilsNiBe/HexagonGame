@@ -1,19 +1,20 @@
 import React from "react";
 import "../App.css";
 import { COLORS } from "../assets/colors";
-import HexGrid from "../components/HexGrid";
 import Hexagon from "../components/Hexagon";
-import Layout from "../components/Layout";
-import { HexNode, getId } from "../models/hexNode";
+import HexGrid from "../components/HexGrid";
+import { LayoutDimension } from "../components/Layout";
 import {
   HexagonNodeGrid,
   tileMapToHexagonGrid,
 } from "../models/hexagonNodeGrid";
+import { getId, HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
+import { getOrientation } from "../models/orientation";
 import { GetUnitColor } from "../models/units/unit";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/dijkstra";
-import { distance, equals } from "../services/hexService";
+import { distance, equals, hexToPixel } from "../services/hexService";
 import "./Terrain.css";
 import { TerrainSvg } from "./TerrainSvg";
 import { UnitSvg } from "./UnitSvg";
@@ -21,7 +22,7 @@ import { UnitSvg } from "./UnitSvg";
 export function GameMap() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
     tileMapToHexagonGrid(PULSE)
-    // createRandomHexagonGrid(15, 23)
+    // createRandomHexagonGrid(35, 23)
     // new HexagonNodeGrid(47, 19)
   );
   const [startHex, setStartHex] = React.useState<HexNode | undefined>(
@@ -41,6 +42,20 @@ export function GameMap() {
     // stroke: COLORS.orange[1],
     // strokeWidth: 0.0,
   };
+
+  const size = 25;
+
+  const layout: LayoutDimension = {
+    size: { x: size, y: size },
+    orientation: getOrientation("flat"),
+    spacing: 1.02,
+    origin: { x: 0, y: 0 },
+  };
+  const pixel = hexGrid.nodes.map(x => hexToPixel(x, layout));
+  const xMin = Math.min(...pixel.map(p => p.x));
+  const xMax = Math.max(...pixel.map(p => p.x));
+  const yMin = Math.min(...pixel.map(p => p.y));
+  const yMax = Math.max(...pixel.map(p => p.y));
 
   React.useEffect(() => {
     if (startHex != undefined && startHex.unit !== undefined) {
@@ -83,115 +98,111 @@ export function GameMap() {
   }, [startHex, endHex]);
 
   return (
-    // <div style={{ background: COLORS.gray[4], padding: 8, paddingLeft: 8 }}>
-    <HexGrid width={1800} height={1040} viewBox="-30 -30 1800 1040">
-      <Layout
-        size={{ x: 24, y: 24 }}
-        flat={true}
-        spacing={1.05}
-        origin={{ x: 0, y: 0 }}
-      >
-        <>
-          {hexGrid.nodes.map(hex => {
-            const isPath = foundPath?.find(x => equals(x, hex)) !== undefined;
-            const isReachable =
-              reachable === undefined
-                ? true
-                : reachable?.find(x => equals(x, hex)) !== undefined;
+    <HexGrid
+      style={{ display: "flex" }}
+      width={xMax + 2 * size}
+      height={yMax + 2 * size}
+      viewBox={`${xMin} ${yMin} ${xMax + 2 * size} ${yMax + 2 * size}`}
+    >
+      {hexGrid.nodes.map(hex => {
+        const isPath = foundPath?.find(x => equals(x, hex)) !== undefined;
+        const isReachable =
+          reachable === undefined
+            ? true
+            : reachable?.find(x => equals(x, hex)) !== undefined;
 
-            return (
-              <Hexagon
-                key={getId(hex)}
-                q={hex.q}
-                r={hex.r}
-                s={hex.s}
-                cellStyle={{
-                  ...cellStyle,
-                  fill:
-                    hex.terrain?.type === "Water"
-                      ? COLORS.blue[5]
-                      : hex.terrain?.type === "Mountain"
-                      ? COLORS.green[3]
-                      : hex.terrain?.type === "Street"
-                      ? COLORS.gray[5]
-                      : hex.terrain?.type === "Forrest"
-                      ? COLORS.green[5]
-                      : hex.terrain?.type === "Plains"
-                      ? COLORS.green[5]
-                      : COLORS.dark[9],
-                  stroke: equals(startHex, hex)
-                    ? COLORS.dark[9]
-                    : isPath
-                    ? COLORS.blue[9]
-                    : undefined,
-                  opacity: isReachable ? 1 : 0.3,
+        return (
+          <Hexagon
+            hex={hex}
+            layout={layout}
+            key={getId(hex)}
+            cellStyle={{
+              ...cellStyle,
+              fill:
+                hex.terrain?.type === "Water"
+                  ? COLORS.blue[5]
+                  : hex.terrain?.type === "Mountain"
+                  ? COLORS.green[3]
+                  : hex.terrain?.type === "Street"
+                  ? COLORS.gray[5]
+                  : hex.terrain?.type === "Forest"
+                  ? COLORS.green[5]
+                  : hex.terrain?.type === "Plains"
+                  ? COLORS.green[5]
+                  : COLORS.dark[9],
+              stroke: equals(startHex, hex)
+                ? COLORS.dark[9]
+                : isPath
+                ? COLORS.blue[9]
+                : undefined,
+              opacity: isReachable ? 1 : 0.3,
 
-                  strokeWidth:
-                    hex.blocked || hex.weight === Number.MAX_VALUE
-                      ? 0
-                      : equals(startHex, hex)
-                      ? 5
-                      : isPath
-                      ? 5
-                      : 0,
-                }}
-                onClick={() => {
-                  if (equals(startHex, hex)) {
-                    setStartHex(undefined);
-                  } else if (!hex.blocked) {
-                    if (startHex === undefined && hex.unit !== undefined) {
-                      setStartHex(hex);
-                    } else if (
-                      startHex !== undefined &&
-                      hex.unit === undefined &&
-                      reachable?.includes(hex)
-                    ) {
-                      const startHexUnit = startHex.unit;
-                      setHexGrid(x => ({
-                        ...x,
-                        nodes: x.nodes.map(n => {
-                          if (n === hex) {
-                            n.unit = startHexUnit;
-                            return n;
-                          } else if (n === startHex) {
-                            startHex.unit = undefined;
-                            return startHex;
-                          }
-                          return n;
-                        }),
-                      }));
-                      setStartHex(undefined);
-                    }
-                  }
-                }}
-                onMouseEnter={() => {
-                  if (hex.blocked || hex.weight === Number.MAX_VALUE) {
-                    setEndHex(undefined);
-                  } else {
-                    setEndHex(hex);
-                  }
-                }}
-              >
-                <>
-                  {hex.terrain && <TerrainSvg type={hex.terrain.type} />}
-                  {hex.unit && (
-                    <UnitSvg
-                      type={hex.unit.kind.type}
-                      width="2.5%"
-                      height="4%"
-                      fill={GetUnitColor(hex.unit)}
-                      stroke={GetUnitColor(hex.unit)}
-                      x={-24}
-                      y={-20}
-                    />
-                  )}
-                </>
-                {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
-              </Hexagon>
-            );
-          })}
-        </>
-      </Layout>
+              strokeWidth:
+                hex.blocked || hex.weight === Number.MAX_VALUE
+                  ? 0
+                  : equals(startHex, hex)
+                  ? 5
+                  : isPath
+                  ? 5
+                  : 0,
+            }}
+            onClick={() => {
+              if (equals(startHex, hex)) {
+                setStartHex(undefined);
+              } else if (!hex.blocked) {
+                if (startHex === undefined && hex.unit !== undefined) {
+                  setStartHex(hex);
+                } else if (
+                  startHex !== undefined &&
+                  hex.unit === undefined &&
+                  reachable?.includes(hex)
+                ) {
+                  const startHexUnit = startHex.unit;
+                  setHexGrid(x => ({
+                    ...x,
+                    nodes: x.nodes.map(n => {
+                      if (n === hex) {
+                        n.unit = startHexUnit;
+                        return n;
+                      } else if (n === startHex) {
+                        startHex.unit = undefined;
+                        return startHex;
+                      }
+                      return n;
+                    }),
+                  }));
+                  setStartHex(undefined);
+                }
+              }
+            }}
+            onMouseEnter={() => {
+              if (hex.blocked || hex.weight === Number.MAX_VALUE) {
+                setEndHex(undefined);
+              } else {
+                setEndHex(hex);
+              }
+            }}
+          >
+            <>
+              {hex.terrain && (
+                <TerrainSvg type={hex.terrain.type} size={size} />
+              )}
+              {hex.unit && (
+                <UnitSvg
+                  type={hex.unit.kind.type}
+                  width="8%"
+                  height="8%"
+                  fill={GetUnitColor(hex.unit)}
+                  stroke={GetUnitColor(hex.unit)}
+                  x={-24}
+                  y={-40}
+                />
+              )}
+            </>
+            {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
+          </Hexagon>
+        );
+      })}
     </HexGrid>
     // </div>
   );

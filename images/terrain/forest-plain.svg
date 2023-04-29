@@ -7,55 +7,15 @@
    viewBox="0 0 100 86.599998"
    version="1.1"
    id="svg5"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
-   sodipodi:docname="Forest.svg"
-   inkscape:export-filename="ForestPlain.svg"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview7"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:document-units="mm"
-     showgrid="false"
-     inkscape:zoom="2.1089995"
-     inkscape:cx="190.61171"
-     inkscape:cy="163.11052"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
   <defs
      id="defs2" />
   <g
-     inkscape:label="Ebene 1"
-     inkscape:groupmode="layer"
      id="layer1">
     <path
-       sodipodi:type="star"
        style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.0917071;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path115"
-       inkscape:flatsided="true"
-       sodipodi:sides="6"
-       sodipodi:cx="41.776325"
-       sodipodi:cy="30.610882"
-       sodipodi:r1="45.852859"
-       sodipodi:r2="39.709743"
-       sodipodi:arg1="0"
-       sodipodi:arg2="0.52359878"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
        d="m 87.629185,30.610882 -22.92643,39.709741 -45.85286,0 -22.9264293,-39.709741 22.9264293,-39.7097414 45.85286,0 z"
        transform="matrix(1.0891868,0,0,1.0891542,4.4977766,9.9600025)" />
     <circle

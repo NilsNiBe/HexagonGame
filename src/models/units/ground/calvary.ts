@@ -15,5 +15,5 @@ export const Cavalry: UnitKind = {
   canBuild: "Both",
   introduced: "1914",
   image: UnitSvg.CavalrySvg,
-  terrains: ["Forrest", "Mountain", "Plains", "Street"],
+  terrains: ["Forest", "Mountain", "Plains", "Street"],
 };

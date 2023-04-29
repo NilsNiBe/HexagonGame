@@ -1,9 +1,11 @@
 import { TerrainType } from "../models/terrain/terrain";
 import { Forest } from "./Forest";
 import { Mountain } from "./Mountain";
+import { Water } from "./Water";
 
 interface TerrainSvgProps {
   type: TerrainType;
+  size: number;
 }
 
 export function TerrainSvg(
@@ -11,10 +13,12 @@ export function TerrainSvg(
 ) {
   //   return null;
   switch (props.type) {
-    case "Forrest":
+    case "Forest":
       return <Forest {...props} />;
     case "Mountain":
       return <Mountain {...props} />;
+    case "Water":
+      return <Water {...props} />;
     default:
       return null;
   }
