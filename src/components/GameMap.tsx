@@ -62,11 +62,19 @@ export function GameMap() {
       const res = runDijkstra(
         hexGrid.nodes,
         startHex,
+        n =>
+          n.unit !== undefined && n.unit?.coalition !== startHex.unit?.coalition
+            ? Number.MAX_VALUE
+            : n.weight,
         startHex.unit.kind.speed
       );
 
       const reachable = res
-        .filter(x => x.cost < Number.MAX_VALUE)
+        .filter(
+          x =>
+            x.cost < Number.MAX_VALUE &&
+            x.node.unit?.coalition != startHex.unit?.coalition
+        )
         .map(x => x.node);
 
       setReachable(reachable);
@@ -89,7 +97,15 @@ export function GameMap() {
         x.predecessor = undefined;
       });
 
-      const res = runAStar(startHex, endHex, (_, n) => n.weight ?? 1, distance);
+      const res = runAStar(
+        startHex,
+        endHex,
+        (_, n) =>
+          n.unit !== undefined && n.unit?.coalition !== startHex.unit?.coalition
+            ? Number.MAX_VALUE
+            : n.weight,
+        distance
+      );
 
       setFoundPath(res);
     } else {
