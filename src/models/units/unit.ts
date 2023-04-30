@@ -52,10 +52,6 @@ export type ExperienceLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type Coalition = (typeof COALITIONS)[number];
 export type Year = "1914" | "1915" | "1916" | "1917" | "1918";
 
-export function GetUnitColor(u: Unit) {
-  return u.coalition === "Central" ? "darkgreen" : "maroon";
-}
-
 export function GetUnit(type: UnitType) {
   switch (type) {
     case "Infantry":

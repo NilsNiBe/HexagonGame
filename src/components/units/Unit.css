@@ -1,0 +1,30 @@
+.skin {
+  fill: #ff9955;
+}
+.gun {
+  fill: #000000;
+}
+.central-normal {
+  fill: #008000;
+}
+.central-light {
+  fill: #44aa00;
+}
+.entente-normal {
+  fill: #804400;
+}
+.entente-light {
+  fill: #c96b00;
+}
+.horse {
+  fill: #32353a;
+}
+.cannon {
+  fill: #666666;
+}
+.cannon-light {
+  fill: #999999;
+}
+.wheel {
+  fill: #000000;
+}

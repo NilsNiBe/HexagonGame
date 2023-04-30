@@ -11,13 +11,12 @@ import {
 import { getId, HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
 import { getOrientation } from "../models/orientation";
-import { GetUnitColor } from "../models/units/unit";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/dijkstra";
 import { distance, equals, hexToPixel } from "../services/hexService";
-import "./Terrain.css";
-import { TerrainSvg } from "./TerrainSvg";
-import { UnitSvg } from "./UnitSvg";
+import "./terrain/Terrain.css";
+import { TerrainSvg } from "./terrain/TerrainSvg";
+import { UnitSvg } from "./units/UnitSvg";
 
 export function GameMap() {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
@@ -43,7 +42,7 @@ export function GameMap() {
     // strokeWidth: 0.0,
   };
 
-  const size = 25;
+  const size = 50;
 
   const layout: LayoutDimension = {
     size: { x: size, y: size },
@@ -209,13 +208,9 @@ export function GameMap() {
               )}
               {hex.unit && (
                 <UnitSvg
+                  size={size}
                   type={hex.unit.kind.type}
-                  width="8%"
-                  height="8%"
-                  fill={GetUnitColor(hex.unit)}
-                  stroke={GetUnitColor(hex.unit)}
-                  x={-24}
-                  y={-40}
+                  coalition={hex.unit.coalition}
                 />
               )}
             </>

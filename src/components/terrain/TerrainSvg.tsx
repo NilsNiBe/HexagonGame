@@ -1,4 +1,4 @@
-import { TerrainType } from "../models/terrain/terrain";
+import { TerrainType } from "../../models/terrain/terrain";
 import { Forest } from "./Forest";
 import { Mountain } from "./Mountain";
 import { Water } from "./Water";

@@ -19,7 +19,6 @@ import {
   Coalition,
   COALITIONS,
   GetUnit,
-  GetUnitColor,
   Unit,
   UnitType,
   UNIT_TYPES,
@@ -28,8 +27,8 @@ import { hexToPixel } from "../services/hexService";
 import Hexagon from "./Hexagon";
 import HexGrid from "./HexGrid";
 import { LayoutDimension } from "./Layout";
-import { TerrainSvg } from "./TerrainSvg";
-import { UnitSvg } from "./UnitSvg";
+import { TerrainSvg } from "./terrain/TerrainSvg";
+import { UnitSvg } from "./units/UnitSvg";
 
 function createHexGrid(
   x: HexagonNodeGrid,
@@ -232,13 +231,9 @@ export function EditorMap() {
                   )}
                   {hex.unit && (
                     <UnitSvg
+                      size={size}
                       type={hex.unit.kind.type}
-                      width="8%"
-                      height="8%"
-                      fill={GetUnitColor(hex.unit)}
-                      stroke={GetUnitColor(hex.unit)}
-                      x={-24}
-                      y={-40}
+                      coalition={hex.unit.coalition}
                     />
                   )}
                 </>
