@@ -1,4 +1,3 @@
-import { UnitSvg } from "../../../assets";
 import { UnitKind } from "../unit";
 
 export const Cavalry: UnitKind = {
@@ -14,6 +13,5 @@ export const Cavalry: UnitKind = {
   size: 6,
   canBuild: "Both",
   introduced: "1914",
-  image: UnitSvg.CavalrySvg,
   terrains: ["Forest", "Mountain", "Plains", "Street"],
 };

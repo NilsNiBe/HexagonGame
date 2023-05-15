@@ -32,7 +32,6 @@ export interface UnitKind {
   size: number;
   canBuild: Coalition | "Both";
   introduced: Year;
-  image: string;
   terrains: TerrainType[];
 }
 

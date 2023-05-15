@@ -17,7 +17,6 @@ export type TerrainType = (typeof TERRAIN_TYPES)[number];
 export interface Terrain {
   type: TerrainType;
   cost: number;
-  image: string;
 }
 
 export function GetTerrain(type: TerrainType) {

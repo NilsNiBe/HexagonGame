@@ -1,4 +1,3 @@
-import { UnitSvg } from "../../../assets";
 import { UnitKind } from "../unit";
 
 export const HeavyArtillery: UnitKind = {
@@ -14,6 +13,5 @@ export const HeavyArtillery: UnitKind = {
   size: 6,
   canBuild: "Both",
   introduced: "1914",
-  image: UnitSvg.HeavyArtillerySvg,
   terrains: ["Street"],
 };
