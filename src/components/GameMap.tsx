@@ -50,18 +50,18 @@ export function GameMap() {
     spacing: 1.02,
     origin: { x: 0, y: 0 },
   };
-  const pixel = hexGrid.nodes.map(x => hexToPixel(x, layout));
-  const xMin = Math.min(...pixel.map(p => p.x));
-  const xMax = Math.max(...pixel.map(p => p.x));
-  const yMin = Math.min(...pixel.map(p => p.y));
-  const yMax = Math.max(...pixel.map(p => p.y));
+  const pixel = hexGrid.nodes.map((x) => hexToPixel(x, layout));
+  const xMin = Math.min(...pixel.map((p) => p.x));
+  const xMax = Math.max(...pixel.map((p) => p.x));
+  const yMin = Math.min(...pixel.map((p) => p.y));
+  const yMax = Math.max(...pixel.map((p) => p.y));
 
   React.useEffect(() => {
     if (startHex != undefined && startHex.unit !== undefined) {
       const res = runDijkstra(
         hexGrid.nodes,
         startHex,
-        n =>
+        (n) =>
           n.unit !== undefined && n.unit?.coalition !== startHex.unit?.coalition
             ? Number.MAX_VALUE
             : n.weight,
@@ -70,11 +70,11 @@ export function GameMap() {
 
       const reachable = res
         .filter(
-          x =>
+          (x) =>
             x.cost < Number.MAX_VALUE &&
             x.node.unit?.coalition != startHex.unit?.coalition
         )
-        .map(x => x.node);
+        .map((x) => x.node);
 
       setReachable(reachable);
     } else {
@@ -89,7 +89,7 @@ export function GameMap() {
       endHex !== undefined &&
       reachable?.includes(endHex)
     ) {
-      hexGrid.nodes.forEach(x => {
+      hexGrid.nodes.forEach((x) => {
         x.f = 0;
         x.g = 0;
         x.h = undefined;
@@ -119,12 +119,12 @@ export function GameMap() {
       height={yMax + 2 * size}
       viewBox={`${xMin} ${yMin} ${xMax + 2 * size} ${yMax + 2 * size}`}
     >
-      {hexGrid.nodes.map(hex => {
-        const isPath = foundPath?.find(x => equals(x, hex)) !== undefined;
+      {hexGrid.nodes.map((hex) => {
+        const isPath = foundPath?.find((x) => equals(x, hex)) !== undefined;
         const isReachable =
           reachable === undefined
             ? true
-            : reachable?.find(x => equals(x, hex)) !== undefined;
+            : reachable?.find((x) => equals(x, hex)) !== undefined;
 
         return (
           <Hexagon
@@ -173,9 +173,9 @@ export function GameMap() {
                   reachable?.includes(hex)
                 ) {
                   const startHexUnit = startHex.unit;
-                  setHexGrid(x => ({
+                  setHexGrid((x) => ({
                     ...x,
-                    nodes: x.nodes.map(n => {
+                    nodes: x.nodes.map((n) => {
                       if (n === hex) {
                         n.unit = startHexUnit;
                         return n;

@@ -33,7 +33,7 @@ function createHexGrid(
 ): HexagonNodeGrid {
   return {
     ...x,
-    nodes: x.nodes.map(x =>
+    nodes: x.nodes.map((x) =>
       x === hex
         ? {
             ...x,
@@ -72,21 +72,25 @@ export function EditorMap() {
     origin: { x: 0, y: 0 },
   };
 
-  const onHexClick = (hex: HexNode) => {
+  const onHexClick = (
+    index: number,
+    grid: HexagonNodeGrid
+  ): HexagonNodeGrid => {
+    const hex = grid.nodes[index];
     if (selected === undefined) {
       if (hex.unit !== undefined) {
-        setHexGrid(x => createHexGrid(x, hex, hex.terrain, undefined));
+        return createHexGrid(grid, hex, hex.terrain, undefined);
       }
     } else if (TERRAIN_TYPES.includes(selected as TerrainType)) {
       const terrain = GetTerrain(selected as TerrainType);
       if (hex.unit !== undefined) {
         if (!hex.unit.kind.terrains.includes(terrain.type)) {
-          setHexGrid(x => createHexGrid(x, hex, terrain, undefined));
+          return createHexGrid(grid, hex, terrain, undefined);
         } else {
-          setHexGrid(x => createHexGrid(x, hex, terrain, hex.unit));
+          return createHexGrid(grid, hex, terrain, hex.unit);
         }
       } else {
-        setHexGrid(x => createHexGrid(x, hex, terrain, hex.unit));
+        return createHexGrid(grid, hex, terrain, hex.unit);
       }
     } else if (UNIT_TYPES.includes(selected as UnitType)) {
       const unit = GetUnit(selected as UnitType);
@@ -95,26 +99,25 @@ export function EditorMap() {
           hex.unit?.kind === unit &&
           hex.unit.coalition === selectedCoalition
         ) {
-          setHexGrid(x => createHexGrid(x, hex, hex.terrain, undefined));
+          return createHexGrid(grid, hex, hex.terrain, undefined);
         } else {
-          setHexGrid(x =>
-            createHexGrid(x, hex, hex.terrain, {
-              coalition: selectedCoalition,
-              kind: unit,
-              experience: 0,
-              health: unit.size,
-            })
-          );
+          return createHexGrid(grid, hex, hex.terrain, {
+            coalition: selectedCoalition,
+            kind: unit,
+            experience: 0,
+            health: unit.size,
+          });
         }
       }
     }
+    return grid;
   };
 
   return (
     <>
       <div>
         <div>
-          {TERRAIN_TYPES.map(x => (
+          {TERRAIN_TYPES.map((x) => (
             <label>
               <input
                 type="radio"
@@ -122,14 +125,14 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={e => setSelected(e.target.value as TerrainType)}
+                onChange={(e) => setSelected(e.target.value as TerrainType)}
               />
               {x}
             </label>
           ))}
         </div>
         <div>
-          {UNIT_TYPES.map(x => (
+          {UNIT_TYPES.map((x) => (
             <label>
               <input
                 type="radio"
@@ -137,7 +140,7 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={e => setSelected(e.target.value as UnitType)}
+                onChange={(e) => setSelected(e.target.value as UnitType)}
               />
               {x}
             </label>
@@ -149,13 +152,13 @@ export function EditorMap() {
               id="NoUnit"
               value={undefined}
               checked={selected === undefined}
-              onChange={e => setSelected(undefined)}
+              onChange={(e) => setSelected(undefined)}
             />
             No Unit
           </label>
         </div>
         <div>
-          {COALITIONS.map(x => (
+          {COALITIONS.map((x) => (
             <label>
               <input
                 type="radio"
@@ -163,7 +166,7 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selectedCoalition === x}
-                onChange={e =>
+                onChange={(e) =>
                   setSelectedCoalition(e.target.value as Coalition)
                 }
               />
@@ -182,7 +185,7 @@ export function EditorMap() {
       <Map
         hexSize={25}
         createGrid={() => tileMapToHexagonGrid(PULSE)}
-        onClick={h => onHexClick(h as HexNode)}
+        onHexClick={onHexClick}
       />
     </>
   );

@@ -14,7 +14,7 @@ import { UnitSvg } from "./units/UnitSvg";
 export interface MapProps {
   hexSize: number;
   createGrid: () => HexagonNodeGrid;
-  onClick: (hex: HexagonTile) => void;
+  onHexClick: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
 }
 
 export const Map = (props: MapProps) => {
@@ -28,12 +28,12 @@ export const Map = (props: MapProps) => {
     spacing: 1.02,
     origin: { x: 0, y: 0 },
   };
-  const pixel = hexGrid.nodes.map(x => hexToPixel(x, layout));
+  const pixel = hexGrid.nodes.map((x) => hexToPixel(x, layout));
 
-  const xMin = Math.min(...pixel.map(p => p.x));
-  const xMax = Math.max(...pixel.map(p => p.x));
-  const yMin = Math.min(...pixel.map(p => p.y));
-  const yMax = Math.max(...pixel.map(p => p.y));
+  const xMin = Math.min(...pixel.map((p) => p.x));
+  const xMax = Math.max(...pixel.map((p) => p.x));
+  const yMin = Math.min(...pixel.map((p) => p.y));
+  const yMax = Math.max(...pixel.map((p) => p.y));
 
   return (
     <HexGrid
@@ -43,7 +43,7 @@ export const Map = (props: MapProps) => {
       viewBox={`${xMin} ${yMin} ${xMax + 2 * size} ${yMax + 2 * size}`}
     >
       <>
-        {hexGrid.nodes.map(hex => {
+        {hexGrid.nodes.map((hex, index) => {
           return (
             <Hexagon
               hex={hex}
@@ -63,7 +63,7 @@ export const Map = (props: MapProps) => {
                     ? COLORS.green[5]
                     : COLORS.dark[9],
               }}
-              onClick={() => props.onClick(hex)}
+              onClick={() => setHexGrid(props.onHexClick(index, hexGrid))}
             >
               <>
                 {hex.terrain && (
