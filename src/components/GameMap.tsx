@@ -19,7 +19,15 @@ export function GameMap() {
     // deselect unit
     if (hex.isSelected) {
       hex.isSelected = false;
-      return { ...grid };
+      return {
+        ...grid,
+        nodes: grid.nodes.map((x) => ({
+          ...x,
+          isReachable: false,
+          isPath: false,
+          isSelected: false,
+        })),
+      };
     }
     // select unit
     if (!hex.blocked && hex.unit !== undefined) {
@@ -64,13 +72,20 @@ export function GameMap() {
     ) {
       return {
         ...grid,
-        nodes: grid.nodes.map((x) =>
-          x.isSelected
-            ? { ...x, isSelected: false, unit: undefined }
-            : x.key === hex.key
-            ? { ...x, unit: selectedHex.unit }
-            : x
-        ),
+        nodes: grid.nodes
+          .map((x) =>
+            x.isSelected
+              ? { ...x, unit: undefined }
+              : x.key === hex.key
+              ? { ...x, unit: selectedHex.unit }
+              : x
+          )
+          .map((x) => ({
+            ...x,
+            isReachable: false,
+            isPath: false,
+            isSelected: false,
+          })),
       };
     }
     return grid;

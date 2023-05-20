@@ -84,7 +84,13 @@ export const Map = (props: MapProps) => {
             >
               <>
                 {hex.terrain && (
-                  <TerrainSvg type={hex.terrain.type} size={size} />
+                  <TerrainSvg
+                    type={hex.terrain.type}
+                    size={size}
+                    opacity={
+                      selectedHex === undefined ? 1 : hex.isReachable ? 1 : 0.3
+                    }
+                  />
                 )}
                 {hex.unit && (
                   <UnitSvg
