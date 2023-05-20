@@ -92,6 +92,7 @@ export function EditorMap() {
             kind: unit,
             experience: 0,
             health: unit.size,
+            orientation: "North",
           });
         }
       }
