@@ -1,224 +1,118 @@
-import React from "react";
 import "../App.css";
-import { COLORS } from "../assets/colors";
-import Hexagon from "../components/Hexagon";
-import HexGrid from "../components/HexGrid";
-import { LayoutDimension } from "../components/Layout";
 import {
   HexagonNodeGrid,
   tileMapToHexagonGrid,
 } from "../models/hexagonNodeGrid";
-import { getId, HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
-import { getOrientation } from "../models/orientation";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/dijkstra";
-import { distance, equals, hexToPixel } from "../services/hexService";
+import { distance } from "../services/hexService";
 import "./terrain/Terrain.css";
-import { TerrainSvg } from "./terrain/TerrainSvg";
-import { UnitSvg } from "./units/UnitSvg";
+import { Map } from "./Map";
 
 export function GameMap() {
-  const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
-    tileMapToHexagonGrid(PULSE)
-    // createRandomHexagonGrid(35, 23)
-    // new HexagonNodeGrid(47, 19)
-  );
-  const [startHex, setStartHex] = React.useState<HexNode | undefined>(
-    undefined
-  );
-  const [endHex, setEndHex] = React.useState<HexNode | undefined>(undefined);
-  const [foundPath, setFoundPath] = React.useState<HexNode[] | undefined>(
-    undefined
-  );
+  const onHexClick = (
+    index: number,
+    grid: HexagonNodeGrid
+  ): HexagonNodeGrid => {
+    const hex = grid.nodes[index];
+    if (hex.isSelected) {
+      hex.isSelected = false;
+      return { ...grid };
+    } else {
+      // select unit or move unit
+      if (hex.unit !== undefined && !hex.blocked) {
+        // run dijkstra and set hex as selected
+        const res = runDijkstra(
+          grid.nodes,
+          hex,
+          (n) =>
+            n.unit !== undefined && n.unit?.coalition !== hex.unit?.coalition
+              ? Number.MAX_VALUE
+              : n.weight,
+          hex.unit.kind.speed
+        );
 
-  const [reachable, setReachable] = React.useState<HexNode[] | undefined>(
-    undefined
-  );
+        const reachable = res
+          .filter(
+            (x) =>
+              x.cost < Number.MAX_VALUE &&
+              x.node.unit?.coalition != hex.unit?.coalition &&
+              !hex.blocked
+          )
+          .map((x) => x.node);
 
-  const cellStyle = {
-    // fill: COLORS.orange[0],
-    // stroke: COLORS.orange[1],
-    // strokeWidth: 0.0,
+        return {
+          ...grid,
+          nodes: grid.nodes
+            .map((x) =>
+              reachable.find((r) => r.key === x.key) !== undefined
+                ? { ...x, isReachable: true }
+                : x
+            )
+            .map((x) => (hex.key === x.key ? { ...x, isSelected: true } : x)),
+        };
+      }
+      const selectedHex = grid.nodes.find((x) => x.isSelected);
+      if (selectedHex !== undefined && !hex.blocked && hex.unit === undefined) {
+        return {
+          ...grid,
+          nodes: grid.nodes.map((x) =>
+            x.isSelected
+              ? { ...x, isSelected: false, unit: undefined }
+              : x.key === hex.key
+              ? { ...x, unit: selectedHex.unit }
+              : x
+          ),
+        };
+      }
+    }
+    return grid;
   };
 
-  const size = 50;
-
-  const layout: LayoutDimension = {
-    size: { x: size, y: size },
-    orientation: getOrientation("flat"),
-    spacing: 1.02,
-    origin: { x: 0, y: 0 },
-  };
-  const pixel = hexGrid.nodes.map((x) => hexToPixel(x, layout));
-  const xMin = Math.min(...pixel.map((p) => p.x));
-  const xMax = Math.max(...pixel.map((p) => p.x));
-  const yMin = Math.min(...pixel.map((p) => p.y));
-  const yMax = Math.max(...pixel.map((p) => p.y));
-
-  React.useEffect(() => {
-    if (startHex != undefined && startHex.unit !== undefined) {
-      const res = runDijkstra(
-        hexGrid.nodes,
-        startHex,
-        (n) =>
-          n.unit !== undefined && n.unit?.coalition !== startHex.unit?.coalition
-            ? Number.MAX_VALUE
-            : n.weight,
-        startHex.unit.kind.speed
-      );
-
-      const reachable = res
-        .filter(
-          (x) =>
-            x.cost < Number.MAX_VALUE &&
-            x.node.unit?.coalition != startHex.unit?.coalition
-        )
-        .map((x) => x.node);
-
-      setReachable(reachable);
+  function onHexHover(index: number, grid: HexagonNodeGrid): HexagonNodeGrid {
+    const hex = grid.nodes[index];
+    if (!hex.isReachable) {
+      grid.nodes.forEach((x) => (x.isPath = false));
+      return { ...grid };
     } else {
-      setReachable(undefined);
+      grid.nodes.forEach((x) => (x.isPath = false));
+      const selectedHex = grid.nodes.find((x) => x.isSelected);
+      if (selectedHex !== undefined && selectedHex.unit !== undefined) {
+        grid.nodes.forEach((x) => {
+          x.f = 0;
+          x.g = 0;
+          x.h = undefined;
+          x.predecessor = undefined;
+        });
+
+        const path = runAStar(
+          selectedHex,
+          hex,
+          (_, n) =>
+            n.unit !== undefined &&
+            n.unit?.coalition !== selectedHex.unit?.coalition
+              ? Number.MAX_VALUE
+              : n.weight,
+          distance
+        );
+        return {
+          ...grid,
+          nodes: grid.nodes.map((x) =>
+            path.find((p) => p.key === x.key) ? { ...x, isPath: true } : x
+          ),
+        };
+      }
+      return grid;
     }
-  }, [startHex]);
-
-  React.useEffect(() => {
-    if (
-      startHex !== undefined &&
-      startHex.unit !== undefined &&
-      endHex !== undefined &&
-      reachable?.includes(endHex)
-    ) {
-      hexGrid.nodes.forEach((x) => {
-        x.f = 0;
-        x.g = 0;
-        x.h = undefined;
-        x.predecessor = undefined;
-      });
-
-      const res = runAStar(
-        startHex,
-        endHex,
-        (_, n) =>
-          n.unit !== undefined && n.unit?.coalition !== startHex.unit?.coalition
-            ? Number.MAX_VALUE
-            : n.weight,
-        distance
-      );
-
-      setFoundPath(res);
-    } else {
-      setFoundPath(undefined);
-    }
-  }, [startHex, endHex]);
+  }
 
   return (
-    <HexGrid
-      style={{ display: "flex" }}
-      width={xMax + 2 * size}
-      height={yMax + 2 * size}
-      viewBox={`${xMin} ${yMin} ${xMax + 2 * size} ${yMax + 2 * size}`}
-    >
-      {hexGrid.nodes.map((hex) => {
-        const isPath = foundPath?.find((x) => equals(x, hex)) !== undefined;
-        const isReachable =
-          reachable === undefined
-            ? true
-            : reachable?.find((x) => equals(x, hex)) !== undefined;
-
-        return (
-          <Hexagon
-            hex={hex}
-            layout={layout}
-            key={getId(hex)}
-            cellStyle={{
-              ...cellStyle,
-              fill:
-                hex.terrain?.type === "Water"
-                  ? COLORS.blue[5]
-                  : hex.terrain?.type === "Mountain"
-                  ? COLORS.green[3]
-                  : hex.terrain?.type === "Street"
-                  ? COLORS.gray[5]
-                  : hex.terrain?.type === "Forest"
-                  ? COLORS.green[5]
-                  : hex.terrain?.type === "Plains"
-                  ? COLORS.green[5]
-                  : COLORS.dark[9],
-              stroke: equals(startHex, hex)
-                ? COLORS.dark[9]
-                : isPath
-                ? COLORS.blue[9]
-                : undefined,
-              opacity: isReachable ? 1 : 0.3,
-
-              strokeWidth:
-                hex.blocked || hex.weight === Number.MAX_VALUE
-                  ? 0
-                  : equals(startHex, hex)
-                  ? 1
-                  : isPath
-                  ? 1
-                  : 0,
-            }}
-            onClick={() => {
-              if (equals(startHex, hex)) {
-                setStartHex(undefined);
-              } else if (!hex.blocked) {
-                if (startHex === undefined && hex.unit !== undefined) {
-                  setStartHex(hex);
-                } else if (
-                  startHex !== undefined &&
-                  hex.unit === undefined &&
-                  reachable?.includes(hex)
-                ) {
-                  const startHexUnit = startHex.unit;
-                  setHexGrid((x) => ({
-                    ...x,
-                    nodes: x.nodes.map((n) => {
-                      if (n === hex) {
-                        n.unit = startHexUnit;
-                        return n;
-                      } else if (n === startHex) {
-                        startHex.unit = undefined;
-                        return startHex;
-                      }
-                      return n;
-                    }),
-                  }));
-                  setStartHex(undefined);
-                }
-              }
-            }}
-            onMouseEnter={() => {
-              if (hex.blocked || hex.weight === Number.MAX_VALUE) {
-                setEndHex(undefined);
-              } else {
-                setEndHex(hex);
-              }
-            }}
-          >
-            <>
-              {hex.terrain && (
-                <TerrainSvg
-                  type={hex.terrain.type}
-                  size={size}
-                  opacity={isReachable ? 1 : 0.3}
-                />
-              )}
-              {hex.unit && (
-                <UnitSvg
-                  size={size}
-                  type={hex.unit.kind.type}
-                  coalition={hex.unit.coalition}
-                />
-              )}
-            </>
-            {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
-          </Hexagon>
-        );
-      })}
-    </HexGrid>
-    // </div>
+    <Map
+      hexSize={50}
+      createGrid={() => tileMapToHexagonGrid(PULSE)}
+      onHexClick={onHexClick}
+      onHexHover={onHexHover}
+    />
   );
 }

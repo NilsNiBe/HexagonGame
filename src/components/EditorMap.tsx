@@ -58,20 +58,6 @@ export function EditorMap() {
   const [selectedCoalition, setSelectedCoalition] =
     React.useState<Coalition>("Central");
 
-  const cellStyle = {
-    // fill: COLORS.orange[0],
-    // stroke: COLORS.orange[1],
-    // strokeWidth: 0.0,
-  };
-
-  const size = 25;
-  const layout: LayoutDimension = {
-    size: { x: size, y: size },
-    orientation: getOrientation("flat"),
-    spacing: 1.02,
-    origin: { x: 0, y: 0 },
-  };
-
   const onHexClick = (
     index: number,
     grid: HexagonNodeGrid

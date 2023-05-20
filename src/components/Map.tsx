@@ -2,7 +2,7 @@ import React from "react";
 import { COLORS } from "../assets/colors";
 import { HexagonNodeGrid } from "../models/hexagonNodeGrid";
 import HexagonTile from "../models/hexagonTile";
-import { getId } from "../models/hexNode";
+import { getKey } from "../models/hexNode";
 import { getOrientation } from "../models/orientation";
 import { hexToPixel } from "../services/hexService";
 import Hexagon from "./Hexagon";
@@ -15,6 +15,7 @@ export interface MapProps {
   hexSize: number;
   createGrid: () => HexagonNodeGrid;
   onHexClick: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
+  onHexHover?: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
 }
 
 export const Map = (props: MapProps) => {
@@ -34,6 +35,7 @@ export const Map = (props: MapProps) => {
   const xMax = Math.max(...pixel.map((p) => p.x));
   const yMin = Math.min(...pixel.map((p) => p.y));
   const yMax = Math.max(...pixel.map((p) => p.y));
+  const selectedHex = hexGrid.nodes.find((x) => x.isSelected);
 
   return (
     <HexGrid
@@ -48,7 +50,7 @@ export const Map = (props: MapProps) => {
             <Hexagon
               hex={hex}
               layout={layout}
-              key={getId(hex)}
+              key={getKey(hex)}
               cellStyle={{
                 fill:
                   hex.terrain?.type === "Water"
@@ -62,8 +64,23 @@ export const Map = (props: MapProps) => {
                     : hex.terrain?.type === "Plains"
                     ? COLORS.green[5]
                     : COLORS.dark[9],
+                opacity:
+                  selectedHex !== undefined ? (hex.isReachable ? 1 : 0.3) : 1,
+                stroke:
+                  selectedHex !== undefined
+                    ? hex.key === selectedHex.key
+                      ? COLORS.dark[9]
+                      : hex.isPath
+                      ? COLORS.blue[9]
+                      : undefined
+                    : undefined,
               }}
               onClick={() => setHexGrid(props.onHexClick(index, hexGrid))}
+              onMouseEnter={() => {
+                if (props.onHexHover !== undefined) {
+                  setHexGrid(props.onHexHover(index, hexGrid));
+                }
+              }}
             >
               <>
                 {hex.terrain && (

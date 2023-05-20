@@ -6,8 +6,5 @@ export interface GridNode {
   predecessor?: GridNode;
   blocked: boolean;
   weight: number;
-}
-
-export function GridNodeEquals(a: GridNode, b: GridNode) {
-  return a.f === b.f && a.g === b.g;
+  key: string;
 }

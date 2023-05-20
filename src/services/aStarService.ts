@@ -20,8 +20,8 @@ export function runAStar<T extends GridNode>(
     let current = openList.reduce((r, e) => (r.f < e.f ? r : e));
     openList.splice(openList.indexOf(current), 1);
     // Wurde das Ziel gefunden?
-    if (endNode === current) {
-      return pathFound(endNode);
+    if (endNode.key === current.key) {
+      return pathFound(current);
     }
     // Der aktuelle Knoten soll durch nachfolgende Funktionen
     // nicht weiter untersucht werden, damit keine Zyklen entstehen

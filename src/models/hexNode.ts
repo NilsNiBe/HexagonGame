@@ -1,7 +1,7 @@
 import { GridNode } from "./gridNode";
 import HexagonTile, { HexCoordinates } from "./hexagonTile";
 import { Terrain, TerrainType } from "./terrain/terrain";
-import { Coalition, Unit, UnitKind, UnitType } from "./units/unit";
+import { Coalition, Unit, UnitType } from "./units/unit";
 
 export interface HexNode extends HexagonTile, GridNode {
   f: number;
@@ -12,6 +12,9 @@ export interface HexNode extends HexagonTile, GridNode {
   terrain: Terrain;
   unit?: Unit;
   weight: number;
+  isReachable: boolean;
+  isPath: boolean;
+  isSelected: boolean;
 }
 
 export interface SimpleHexNode {
@@ -26,7 +29,7 @@ export interface SimpleUnit {
   c: Coalition;
 }
 
-export function getId(h: HexNode) {
+export function getKey(h: HexCoordinates) {
   return `q:${h.q},r:${h.r}`;
 }
 
@@ -39,6 +42,7 @@ export function createHexNode(
     q: h.q,
     r: h.r,
     s: h.s,
+    key: `q:${h.q},r:${h.r}`,
     weight: t.cost,
     blocked: t.type === "Water",
     terrain: t,
@@ -46,6 +50,9 @@ export function createHexNode(
     f: 0,
     g: 0,
     neighbors: [],
+    isReachable: false,
+    isPath: false,
+    isSelected: false,
   };
 }
 
@@ -58,6 +65,7 @@ export function createHexNodeSimple(
     q: h.q,
     r: h.r,
     s: -h.q - h.r,
+    key: `q:${h.q},r:${h.r}`,
     weight: t.cost,
     blocked: t.type === "Water",
     terrain: t,
@@ -65,6 +73,9 @@ export function createHexNodeSimple(
     f: 0,
     g: 0,
     neighbors: [],
+    isReachable: false,
+    isPath: false,
+    isSelected: false,
   };
 }
 
