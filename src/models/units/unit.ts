@@ -14,10 +14,20 @@ export const UNIT_TYPES = [
   "Medium-Artillery",
   "Heavy-Artillery",
 ] as const;
+export type UnitType = (typeof UNIT_TYPES)[number];
 
 export const COALITIONS = ["Central", "Entente"] as const;
 
-export type UnitType = (typeof UNIT_TYPES)[number];
+export const UNIT_ORIENTATION = [
+  "North",
+  "North-East",
+  "South-East",
+  "South",
+  "South-West",
+  "North-West",
+] as const;
+
+export type UnitOrientation = (typeof UNIT_ORIENTATION)[number];
 
 export interface UnitKind {
   type: UnitType;
@@ -45,6 +55,7 @@ export interface Unit {
   health: number;
   experience: ExperienceLevel;
   coalition: Coalition;
+  orientation: UnitOrientation;
 }
 
 export type ExperienceLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -69,5 +80,11 @@ export function GetUnit(type: UnitType) {
 }
 
 export function createUnit(c: Coalition, u: UnitKind): Unit {
-  return { kind: u, coalition: c, health: u.size, experience: 0 };
+  return {
+    kind: u,
+    coalition: c,
+    health: u.size,
+    experience: 0,
+    orientation: "North",
+  };
 }

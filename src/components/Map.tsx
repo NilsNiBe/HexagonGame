@@ -97,6 +97,7 @@ export const Map = (props: MapProps) => {
                     size={size}
                     type={hex.unit.kind.type}
                     coalition={hex.unit.coalition}
+                    orientation={hex.unit.orientation}
                   />
                 )}
               </>
