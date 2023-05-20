@@ -7,13 +7,7 @@ type hexPropsType = {
   fill: string;
   className: string;
 };
-// interface hexAttributes {
-//   blocked: boolean;
-//   text: string;
-//   image: string;
-//   props: Partial<hexPropsType>;
-//   neighbors: hexagon[];
-// }
+
 export interface HexagonTile extends HexCoordinates {
   q: number;
   r: number;
@@ -24,6 +18,6 @@ export interface HexagonTile extends HexCoordinates {
 }
 export default HexagonTile;
 
-export function HexCoordinatesEqual(a: HexCoordinates, b: HexCoordinates) {
-  return a.q === b.q && a.r === b.r;
+export function getHexKey(h: HexCoordinates) {
+  return `q:${h.q},r:${h.r}`;
 }

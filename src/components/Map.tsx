@@ -1,8 +1,7 @@
 import React from "react";
 import { COLORS } from "../assets/colors";
 import { HexagonNodeGrid } from "../models/hexagonNodeGrid";
-import HexagonTile from "../models/hexagonTile";
-import { getKey } from "../models/hexNode";
+import HexagonTile, { getHexKey } from "../models/hexagonTile";
 import { getOrientation } from "../models/orientation";
 import { hexToPixel } from "../services/hexService";
 import Hexagon from "./Hexagon";
@@ -10,6 +9,7 @@ import HexGrid from "./HexGrid";
 import { LayoutDimension } from "./Layout";
 import { TerrainSvg } from "./terrain/TerrainSvg";
 import { UnitSvg } from "./units/UnitSvg";
+import { Coordinates } from "./Coordinates";
 
 export interface MapProps {
   hexSize: number;
@@ -50,7 +50,7 @@ export const Map = (props: MapProps) => {
             <Hexagon
               hex={hex}
               layout={layout}
-              key={getKey(hex)}
+              key={getHexKey(hex)}
               cellStyle={{
                 fill:
                   hex.terrain?.type === "Water"
@@ -101,6 +101,7 @@ export const Map = (props: MapProps) => {
                   />
                 )}
               </>
+              {/* <Coordinates q={hex.q} r={hex.r} s={hex.s} /> */}
             </Hexagon>
           );
         })}

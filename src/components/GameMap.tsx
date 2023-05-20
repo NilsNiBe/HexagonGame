@@ -9,6 +9,7 @@ import { runDijkstra } from "../services/dijkstra";
 import { distance } from "../services/hexService";
 import "./terrain/Terrain.css";
 import { Map } from "./Map";
+import { getOrientationFromTo } from "../models/units/unit";
 
 export function GameMap() {
   const onHexClick = (
@@ -70,6 +71,18 @@ export function GameMap() {
       !hex.blocked &&
       hex.unit === undefined
     ) {
+      const path = runAStar(
+        selectedHex,
+        hex,
+        (_, n) =>
+          n.unit !== undefined &&
+          n.unit?.coalition !== selectedHex.unit?.coalition
+            ? Number.MAX_VALUE
+            : n.weight,
+        distance
+      );
+      const orientation = getOrientationFromTo(path[1], path[0]);
+
       return {
         ...grid,
         nodes: grid.nodes
@@ -77,7 +90,10 @@ export function GameMap() {
             x.isSelected
               ? { ...x, unit: undefined }
               : x.key === hex.key
-              ? { ...x, unit: selectedHex.unit }
+              ? {
+                  ...x,
+                  unit: { ...selectedHex.unit!, orientation: orientation },
+                }
               : x
           )
           .map((x) => ({

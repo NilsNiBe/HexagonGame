@@ -29,10 +29,6 @@ export interface SimpleUnit {
   c: Coalition;
 }
 
-export function getKey(h: HexCoordinates) {
-  return `q:${h.q},r:${h.r}`;
-}
-
 export function createHexNode(
   h: HexCoordinates,
   t: Terrain,

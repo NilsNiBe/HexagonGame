@@ -1,3 +1,5 @@
+import { DIRECTIONS, add } from "../../services/hexService";
+import { HexCoordinates, getHexKey } from "../hexagonTile";
 import { TerrainType } from "../terrain/terrain";
 import { Cavalry } from "./ground/calvary";
 import { EliteInfantry } from "./ground/eliteInfantry";
@@ -87,4 +89,39 @@ export function createUnit(c: Coalition, u: UnitKind): Unit {
     experience: 0,
     orientation: "North",
   };
+}
+
+export function getOrientationFromTo(
+  from: HexCoordinates,
+  to: HexCoordinates
+): UnitOrientation {
+  for (let i = 0; i < DIRECTIONS.length; i++) {
+    const hex = add(DIRECTIONS[i], from);
+    if (hex.q === to.q && hex.r === to.r) {
+      return getOrientation(DIRECTIONS[i]);
+    }
+  }
+  return "North";
+}
+
+export function getOrientation(hex: HexCoordinates): UnitOrientation {
+  if (hex.q === 0 && hex.r === -1) {
+    return "North";
+  }
+  if (hex.q === 1 && hex.r === -1) {
+    return "North-East";
+  }
+  if (hex.q === 1 && hex.r === 0) {
+    return "South-East";
+  }
+  if (hex.q === 0 && hex.r === 1) {
+    return "South";
+  }
+  if (hex.q === -1 && hex.r === 1) {
+    return "South-West";
+  }
+  if (hex.q === -1 && hex.r === 0) {
+    return "North-West";
+  }
+  throw Error(`Not supported orientation coordinate: (q:${hex.q}, r:${hex.r})`);
 }

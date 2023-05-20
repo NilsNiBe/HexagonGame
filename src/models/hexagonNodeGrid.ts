@@ -1,6 +1,5 @@
 import GridGenerator from "../services/gridService";
 import { neighbors } from "../services/hexService";
-import { HexCoordinatesEqual } from "./hexagonTile";
 import {
   createHexNode,
   createHexNodeSimple,
@@ -34,8 +33,8 @@ function getNeighbors(x: HexNode, hexNodes: HexNode[]) {
   const potentialNeighbors = neighbors(x);
   for (let i = 0; i < potentialNeighbors.length; i++) {
     const neighbor = potentialNeighbors[i];
-    const hexNodesNeighborIndex = hexNodes.findIndex((node) =>
-      HexCoordinatesEqual(node, neighbor)
+    const hexNodesNeighborIndex = hexNodes.findIndex(
+      (node) => node.q === neighbor.q && node.r === neighbor.r
     );
     if (hexNodesNeighborIndex > -1) {
       res.push(hexNodes[hexNodesNeighborIndex]);
