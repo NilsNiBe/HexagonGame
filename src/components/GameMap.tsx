@@ -16,56 +16,62 @@ export function GameMap() {
     grid: HexagonNodeGrid
   ): HexagonNodeGrid => {
     const hex = grid.nodes[index];
+    // deselect unit
     if (hex.isSelected) {
       hex.isSelected = false;
       return { ...grid };
-    } else {
-      // select unit or move unit
-      if (hex.unit !== undefined && !hex.blocked) {
-        // run dijkstra and set hex as selected
-        const res = runDijkstra(
-          grid.nodes,
-          hex,
-          (n) =>
-            n.unit !== undefined && n.unit?.coalition !== hex.unit?.coalition
-              ? Number.MAX_VALUE
-              : n.weight,
-          hex.unit.kind.speed
-        );
+    }
+    // select unit
+    if (!hex.blocked && hex.unit !== undefined) {
+      // run dijkstra and set hex as selected
+      const res = runDijkstra(
+        grid.nodes,
+        hex,
+        (n) =>
+          n.unit !== undefined && n.unit?.coalition !== hex.unit?.coalition
+            ? Number.MAX_VALUE
+            : n.weight,
+        hex.unit.kind.speed
+      );
 
-        const reachable = res
-          .filter(
-            (x) =>
-              x.cost < Number.MAX_VALUE &&
-              x.node.unit?.coalition != hex.unit?.coalition &&
-              !hex.blocked
-          )
-          .map((x) => x.node);
+      const reachable = res
+        .filter(
+          (x) =>
+            x.cost < Number.MAX_VALUE &&
+            x.node.unit?.coalition != hex.unit?.coalition &&
+            !hex.blocked
+        )
+        .map((x) => x.node);
 
-        return {
-          ...grid,
-          nodes: grid.nodes
-            .map((x) =>
-              reachable.find((r) => r.key === x.key) !== undefined
-                ? { ...x, isReachable: true }
-                : x
-            )
-            .map((x) => (hex.key === x.key ? { ...x, isSelected: true } : x)),
-        };
-      }
-      const selectedHex = grid.nodes.find((x) => x.isSelected);
-      if (selectedHex !== undefined && !hex.blocked && hex.unit === undefined) {
-        return {
-          ...grid,
-          nodes: grid.nodes.map((x) =>
-            x.isSelected
-              ? { ...x, isSelected: false, unit: undefined }
-              : x.key === hex.key
-              ? { ...x, unit: selectedHex.unit }
+      return {
+        ...grid,
+        nodes: grid.nodes
+          .map((x) =>
+            reachable.find((r) => r.key === x.key) !== undefined
+              ? { ...x, isReachable: true }
               : x
-          ),
-        };
-      }
+          )
+          .map((x) => (hex.key === x.key ? { ...x, isSelected: true } : x)),
+      };
+    }
+    // move unit
+    const selectedHex = grid.nodes.find((x) => x.isSelected);
+    if (
+      selectedHex !== undefined &&
+      hex.isReachable &&
+      !hex.blocked &&
+      hex.unit === undefined
+    ) {
+      return {
+        ...grid,
+        nodes: grid.nodes.map((x) =>
+          x.isSelected
+            ? { ...x, isSelected: false, unit: undefined }
+            : x.key === hex.key
+            ? { ...x, unit: selectedHex.unit }
+            : x
+        ),
+      };
     }
     return grid;
   };
