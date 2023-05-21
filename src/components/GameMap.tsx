@@ -30,8 +30,10 @@ export function GameMap() {
         })),
       };
     }
+    const selectedHex = grid.nodes.find((x) => x.isSelected);
+
     // select unit
-    if (!hex.blocked && hex.unit !== undefined) {
+    if (selectedHex === undefined && !hex.blocked && hex.unit !== undefined) {
       // run dijkstra and set hex as selected
       const res = runDijkstra(
         grid.nodes,
@@ -64,7 +66,6 @@ export function GameMap() {
       };
     }
     // move unit
-    const selectedHex = grid.nodes.find((x) => x.isSelected);
     if (
       selectedHex !== undefined &&
       hex.isReachable &&
