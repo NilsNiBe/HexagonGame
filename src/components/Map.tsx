@@ -64,8 +64,6 @@ export const Map = (props: MapProps) => {
                     : hex.terrain?.type === "Plains"
                     ? COLORS.green[5]
                     : COLORS.dark[9],
-                opacity:
-                  selectedHex !== undefined ? (hex.isReachable ? 1 : 0.3) : 1,
                 stroke:
                   selectedHex !== undefined
                     ? hex.key === selectedHex.key
@@ -75,6 +73,13 @@ export const Map = (props: MapProps) => {
                       : undefined
                     : undefined,
               }}
+              filter={
+                selectedHex !== undefined
+                  ? hex.isReachable
+                    ? undefined
+                    : "brightness(70%)"
+                  : undefined
+              }
               onClick={() => setHexGrid(props.onHexClick(index, hexGrid))}
               onMouseEnter={() => {
                 if (props.onHexHover !== undefined) {
@@ -105,6 +110,17 @@ export const Map = (props: MapProps) => {
             </Hexagon>
           );
         })}
+        {selectedHex !== undefined && (
+          <Hexagon
+            hex={selectedHex}
+            layout={layout}
+            cellStyle={{
+              fill: "none",
+              stroke: "black",
+              strokeWidth: 5,
+            }}
+          />
+        )}
       </>
     </HexGrid>
   );
