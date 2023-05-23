@@ -58,6 +58,7 @@ export interface Unit {
   experience: ExperienceLevel;
   coalition: Coalition;
   orientation: UnitOrientation;
+  isDone: boolean;
 }
 
 export type ExperienceLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -88,6 +89,7 @@ export function createUnit(c: Coalition, u: UnitKind): Unit {
     health: u.size,
     experience: 0,
     orientation: "North",
+    isDone: false,
   };
 }
 

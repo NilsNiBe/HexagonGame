@@ -72,6 +72,7 @@ export function UnitSvg(props: UnitSvgProps & React.SVGProps<SVGSVGElement>) {
       }) translate(-50, -43.3) rotate(${getOrientation(
         props.orientation
       )} 50 43.3)`}
+      filter={props.filter}
     >
       {unit({ ...props, prefix })}
     </g>

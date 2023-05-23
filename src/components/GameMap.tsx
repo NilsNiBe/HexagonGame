@@ -45,7 +45,12 @@ export function GameMap(props: GameMapProps) {
       const selectedHex = grid.nodes.find((x) => x.isSelected);
 
       // select unit
-      if (selectedHex === undefined && !hex.blocked && hex.unit !== undefined) {
+      if (
+        selectedHex === undefined &&
+        !hex.blocked &&
+        hex.unit !== undefined &&
+        !hex.unit.isDone
+      ) {
         // run dijkstra and set hex as selected
         const res = runDijkstra(
           grid.nodes,
@@ -107,6 +112,7 @@ export function GameMap(props: GameMapProps) {
                     unit: {
                       ...selectedHex.unit!,
                       orientation: getOrientationFromTo(path[1], path[0]),
+                      isDone: true,
                     },
                   }
                 : x

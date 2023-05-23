@@ -96,6 +96,7 @@ export const Map = (props: MapProps) => {
                     type={hex.unit.kind.type}
                     coalition={hex.unit.coalition}
                     orientation={hex.unit.orientation}
+                    filter={hex.unit.isDone ? "brightness(50%)" : undefined}
                   />
                 )}
               </>
