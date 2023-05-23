@@ -91,14 +91,10 @@ export function Hexagon(
     ...rest
   } = props;
 
-  const [isMouseOver, setIsMouseOver] = React.useState(false);
-
   const fillId = fill ? `url(#${fill})` : undefined;
   const draggable = { draggable: true } as any;
   const cellStyleModified = {
     ...cellStyle,
-    stroke: isMouseOver ? COLORS.red[5] : cellStyle?.stroke,
-    strokeWidth: isMouseOver ? 1.5 : cellStyle?.strokeWidth,
   };
 
   const pixel = hexToPixel(hex, layout);
@@ -149,7 +145,6 @@ export function Hexagon(
         }
       }}
       onMouseEnter={(e) => {
-        setIsMouseOver(true);
         if (onMouseEnter) {
           onMouseEnter(e, { data, hex, props });
         }
@@ -165,7 +160,6 @@ export function Hexagon(
         }
       }}
       onMouseLeave={(e) => {
-        setIsMouseOver(false);
         if (onMouseLeave) {
           onMouseLeave(e, { data, hex, props });
         }

@@ -15,7 +15,7 @@ export interface MapProps {
   hexSize: number;
   createGrid: () => HexagonNodeGrid;
   onHexClick: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
-  onHexHover?: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
+  onHexEnter?: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
 }
 
 export const Map = (props: MapProps) => {
@@ -36,6 +36,7 @@ export const Map = (props: MapProps) => {
   const yMin = Math.min(...pixel.map((p) => p.y));
   const yMax = Math.max(...pixel.map((p) => p.y));
   const selectedHex = hexGrid.nodes.find((x) => x.isSelected);
+  const mouseOverHex = hexGrid.nodes.find((x) => x.isMouseOver);
 
   return (
     <HexGrid
@@ -64,14 +65,6 @@ export const Map = (props: MapProps) => {
                     : hex.terrain?.type === "Plains"
                     ? COLORS.green[5]
                     : COLORS.dark[9],
-                stroke:
-                  selectedHex !== undefined
-                    ? hex.key === selectedHex.key
-                      ? COLORS.dark[9]
-                      : hex.isPath
-                      ? COLORS.blue[9]
-                      : undefined
-                    : undefined,
               }}
               filter={
                 selectedHex !== undefined
@@ -82,8 +75,8 @@ export const Map = (props: MapProps) => {
               }
               onClick={() => setHexGrid(props.onHexClick(index, hexGrid))}
               onMouseEnter={() => {
-                if (props.onHexHover !== undefined) {
-                  setHexGrid(props.onHexHover(index, hexGrid));
+                if (props.onHexEnter !== undefined) {
+                  setHexGrid(props.onHexEnter(index, hexGrid));
                 }
               }}
             >
@@ -116,11 +109,37 @@ export const Map = (props: MapProps) => {
             layout={layout}
             cellStyle={{
               fill: "none",
+              stroke: "brown",
+              strokeWidth: 5,
+            }}
+          />
+        )}
+        {mouseOverHex !== undefined && (
+          <Hexagon
+            hex={mouseOverHex}
+            layout={layout}
+            cellStyle={{
+              fill: "none",
               stroke: "black",
               strokeWidth: 5,
             }}
           />
         )}
+        {hexGrid.nodes.map((hex) => {
+          if (hex.isPath && !hex.isMouseOver && !hex.isSelected) {
+            return (
+              <Hexagon
+                hex={hex}
+                layout={layout}
+                cellStyle={{
+                  fill: "none",
+                  stroke: "blue",
+                  strokeWidth: 2,
+                }}
+              />
+            );
+          }
+        })}
       </>
     </HexGrid>
   );

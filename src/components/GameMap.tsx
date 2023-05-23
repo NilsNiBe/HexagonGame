@@ -10,6 +10,7 @@ import { distance } from "../services/hexService";
 import "./terrain/Terrain.css";
 import { Map } from "./Map";
 import { getOrientationFromTo } from "../models/units/unit";
+import { HexNode } from "../models/hexNode";
 
 export function GameMap() {
   const onHexClick = (
@@ -82,7 +83,6 @@ export function GameMap() {
             : n.weight,
         distance
       );
-      const orientation = getOrientationFromTo(path[1], path[0]);
 
       return {
         ...grid,
@@ -93,7 +93,10 @@ export function GameMap() {
               : x.key === hex.key
               ? {
                   ...x,
-                  unit: { ...selectedHex.unit!, orientation: orientation },
+                  unit: {
+                    ...selectedHex.unit!,
+                    orientation: getOrientationFromTo(path[1], path[0]),
+                  },
                 }
               : x
           )
@@ -108,41 +111,45 @@ export function GameMap() {
     return grid;
   };
 
-  function onHexHover(index: number, grid: HexagonNodeGrid): HexagonNodeGrid {
+  function onHexEnter(index: number, grid: HexagonNodeGrid): HexagonNodeGrid {
     const hex = grid.nodes[index];
-    if (!hex.isReachable) {
-      grid.nodes.forEach((x) => (x.isPath = false));
-      return { ...grid };
-    } else {
-      grid.nodes.forEach((x) => (x.isPath = false));
-      const selectedHex = grid.nodes.find((x) => x.isSelected);
-      if (selectedHex !== undefined && selectedHex.unit !== undefined) {
-        grid.nodes.forEach((x) => {
-          x.f = 0;
-          x.g = 0;
-          x.h = undefined;
-          x.predecessor = undefined;
-        });
 
-        const path = runAStar(
-          selectedHex,
-          hex,
-          (_, n) =>
-            n.unit !== undefined &&
-            n.unit?.coalition !== selectedHex.unit?.coalition
-              ? Number.MAX_VALUE
-              : n.weight,
-          distance
-        );
-        return {
-          ...grid,
-          nodes: grid.nodes.map((x) =>
-            path.find((p) => p.key === x.key) ? { ...x, isPath: true } : x
-          ),
-        };
+    const calcNodes = (): HexNode[] => {
+      if (!hex.isReachable) {
+        return grid.nodes.map((x) => ({ ...x, isPath: false }));
+      } else {
+        const selectedHex = grid.nodes.find((x) => x.isSelected);
+        if (selectedHex !== undefined && selectedHex.unit !== undefined) {
+          grid.nodes.forEach((x) => {
+            x.f = 0;
+            x.g = 0;
+            x.h = undefined;
+            x.predecessor = undefined;
+          });
+
+          const path = runAStar(
+            selectedHex,
+            hex,
+            (_, n) =>
+              n.unit !== undefined &&
+              n.unit?.coalition !== selectedHex.unit?.coalition
+                ? Number.MAX_VALUE
+                : n.weight,
+            distance
+          );
+          return grid.nodes.map((x) => ({
+            ...x,
+            isPath: path.find((p) => p.key === x.key) !== undefined,
+          }));
+        }
+        return { ...grid.nodes };
       }
-      return grid;
-    }
+    };
+
+    return {
+      ...grid,
+      nodes: calcNodes().map((x) => ({ ...x, isMouseOver: x.key === hex.key })),
+    };
   }
 
   return (
@@ -150,7 +157,7 @@ export function GameMap() {
       hexSize={50}
       createGrid={() => tileMapToHexagonGrid(PULSE)}
       onHexClick={onHexClick}
-      onHexHover={onHexHover}
+      onHexEnter={onHexEnter}
     />
   );
 }

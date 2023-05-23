@@ -15,6 +15,7 @@ export interface HexNode extends HexagonTile, GridNode {
   isReachable: boolean;
   isPath: boolean;
   isSelected: boolean;
+  isMouseOver: boolean;
 }
 
 export interface SimpleHexNode {
@@ -49,6 +50,7 @@ export function createHexNode(
     isReachable: false,
     isPath: false,
     isSelected: false,
+    isMouseOver: false,
   };
 }
 
@@ -72,6 +74,7 @@ export function createHexNodeSimple(
     isReachable: false,
     isPath: false,
     isSelected: false,
+    isMouseOver: false,
   };
 }
 
