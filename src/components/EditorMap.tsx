@@ -93,6 +93,7 @@ export function EditorMap() {
             experience: 0,
             health: unit.size,
             orientation: "North",
+            isDone: false,
           });
         }
       }
