@@ -24,7 +24,10 @@ export const Game = () => {
             onNextTurn={nextTurn}
             round={game.round}
           />
-          <GameMap />
+          <GameMap
+            coalition={game.round.player.coalition}
+            mode={game.round.mode}
+          />
         </div>
       );
     case "editor":
