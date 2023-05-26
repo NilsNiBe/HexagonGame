@@ -1,4 +1,4 @@
-import { Mode, Player, Round } from "../hooks/useGame";
+import { Round } from "../hooks/useGame";
 
 interface TopBarProps {
   round?: Round;
@@ -8,7 +8,15 @@ interface TopBarProps {
 
 export const TopBar = (props: TopBarProps) => {
   return (
-    <div>
+    <div
+      style={{
+        position: "sticky",
+        backgroundColor: "white",
+        width: "100%",
+        padding: 5,
+        top: 0,
+      }}
+    >
       <button onClick={props.toMainMenu}>Main Menu</button>
       {props.round && (
         <>

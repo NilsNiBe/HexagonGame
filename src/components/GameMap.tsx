@@ -1,31 +1,44 @@
+import React from "react";
 import "../App.css";
+import { useGame } from "../hooks/useGame";
 import {
   HexagonNodeGrid,
   tileMapToHexagonGrid,
 } from "../models/hexagonNodeGrid";
+import { HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
+import { getOrientationFromTo } from "../models/units/unit";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/dijkstra";
 import { distance } from "../services/hexService";
-import "./terrain/Terrain.css";
 import { Map } from "./Map";
-import { Coalition, getOrientationFromTo } from "../models/units/unit";
-import { HexNode } from "../models/hexNode";
-import { Mode } from "../hooks/useGame";
+import "./terrain/Terrain.css";
+import { TopBar } from "./TopBar";
 
 export interface GameMapProps {
-  coalition: Coalition;
-  mode: Mode;
+  toMainMenu: () => void;
 }
 
 export function GameMap(props: GameMapProps) {
+  const { game, nextTurn } = useGame({
+    player1: { coalition: "Central", name: "Spieler 1", number: "Player1" },
+    player2: { coalition: "Entente", name: "Spieler 2", number: "Player2" },
+  });
+
+  const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
+    tileMapToHexagonGrid(PULSE)
+  );
+
   const onHexClick = (
     index: number,
     grid: HexagonNodeGrid
   ): HexagonNodeGrid => {
     const hex = grid.nodes[index];
-    if (props.mode === "Move") {
-      if (hex.unit !== undefined && hex.unit?.coalition !== props.coalition) {
+    if (game.round.mode === "Move") {
+      if (
+        hex.unit !== undefined &&
+        hex.unit?.coalition !== game.round.player.coalition
+      ) {
         return grid;
       }
 
@@ -34,7 +47,7 @@ export function GameMap(props: GameMapProps) {
         hex.isSelected = false;
         return {
           ...grid,
-          nodes: grid.nodes.map((x) => ({
+          nodes: grid.nodes.map(x => ({
             ...x,
             isReachable: false,
             isPath: false,
@@ -42,7 +55,7 @@ export function GameMap(props: GameMapProps) {
           })),
         };
       }
-      const selectedHex = grid.nodes.find((x) => x.isSelected);
+      const selectedHex = grid.nodes.find(x => x.isSelected);
 
       // select unit
       if (
@@ -55,7 +68,7 @@ export function GameMap(props: GameMapProps) {
         const res = runDijkstra(
           grid.nodes,
           hex,
-          (n) =>
+          n =>
             n.unit !== undefined && n.unit?.coalition !== hex.unit?.coalition
               ? Number.MAX_VALUE
               : n.weight,
@@ -64,22 +77,22 @@ export function GameMap(props: GameMapProps) {
 
         const reachable = res
           .filter(
-            (x) =>
+            x =>
               x.cost < Number.MAX_VALUE &&
               x.node.unit?.coalition != hex.unit?.coalition &&
               !hex.blocked
           )
-          .map((x) => x.node);
+          .map(x => x.node);
 
         return {
           ...grid,
           nodes: grid.nodes
-            .map((x) =>
-              reachable.find((r) => r.key === x.key) !== undefined
+            .map(x =>
+              reachable.find(r => r.key === x.key) !== undefined
                 ? { ...x, isReachable: true }
                 : x
             )
-            .map((x) => (hex.key === x.key ? { ...x, isSelected: true } : x)),
+            .map(x => (hex.key === x.key ? { ...x, isSelected: true } : x)),
         };
       }
       // move unit
@@ -103,7 +116,7 @@ export function GameMap(props: GameMapProps) {
         return {
           ...grid,
           nodes: grid.nodes
-            .map((x) =>
+            .map(x =>
               x.isSelected
                 ? { ...x, unit: undefined }
                 : x.key === hex.key
@@ -117,7 +130,7 @@ export function GameMap(props: GameMapProps) {
                   }
                 : x
             )
-            .map((x) => ({
+            .map(x => ({
               ...x,
               isReachable: false,
               isPath: false,
@@ -136,11 +149,11 @@ export function GameMap(props: GameMapProps) {
 
     const calcNodes = (): HexNode[] => {
       if (!hex.isReachable) {
-        return grid.nodes.map((x) => ({ ...x, isPath: false }));
+        return grid.nodes.map(x => ({ ...x, isPath: false }));
       } else {
-        const selectedHex = grid.nodes.find((x) => x.isSelected);
+        const selectedHex = grid.nodes.find(x => x.isSelected);
         if (selectedHex !== undefined && selectedHex.unit !== undefined) {
-          grid.nodes.forEach((x) => {
+          grid.nodes.forEach(x => {
             x.f = 0;
             x.g = 0;
             x.h = undefined;
@@ -157,9 +170,9 @@ export function GameMap(props: GameMapProps) {
                 : n.weight,
             distance
           );
-          return grid.nodes.map((x) => ({
+          return grid.nodes.map(x => ({
             ...x,
-            isPath: path.find((p) => p.key === x.key) !== undefined,
+            isPath: path.find(p => p.key === x.key) !== undefined,
           }));
         }
         return { ...grid.nodes };
@@ -168,16 +181,34 @@ export function GameMap(props: GameMapProps) {
 
     return {
       ...grid,
-      nodes: calcNodes().map((x) => ({ ...x, isMouseOver: x.key === hex.key })),
+      nodes: calcNodes().map(x => ({ ...x, isMouseOver: x.key === hex.key })),
     };
   }
 
   return (
-    <Map
-      hexSize={50}
-      createGrid={() => tileMapToHexagonGrid(PULSE)}
-      onHexClick={onHexClick}
-      onHexEnter={onHexEnter}
-    />
+    <div>
+      <TopBar
+        toMainMenu={props.toMainMenu}
+        onNextTurn={() => {
+          nextTurn();
+          setHexGrid({
+            ...hexGrid,
+            nodes: hexGrid.nodes.map(x => ({
+              ...x,
+              unit:
+                x.unit === undefined ? undefined : { ...x.unit, isDone: false },
+            })),
+          });
+        }}
+        round={game.round}
+      />
+      <Map
+        grid={hexGrid}
+        hexSize={50}
+        onHexClick={onHexClick}
+        onHexEnter={onHexEnter}
+        setGrid={setHexGrid}
+      />
+    </div>
   );
 }

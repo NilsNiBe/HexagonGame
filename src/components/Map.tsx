@@ -1,7 +1,6 @@
-import React from "react";
 import { COLORS } from "../assets/colors";
 import { HexagonNodeGrid } from "../models/hexagonNodeGrid";
-import HexagonTile, { getHexKey } from "../models/hexagonTile";
+import { getHexKey } from "../models/hexagonTile";
 import { getOrientation } from "../models/orientation";
 import { hexToPixel } from "../services/hexService";
 import Hexagon from "./Hexagon";
@@ -9,19 +8,16 @@ import HexGrid from "./HexGrid";
 import { LayoutDimension } from "./Layout";
 import { TerrainSvg } from "./terrain/TerrainSvg";
 import { UnitSvg } from "./units/UnitSvg";
-import { Coordinates } from "./Coordinates";
 
 export interface MapProps {
+  grid: HexagonNodeGrid;
   hexSize: number;
-  createGrid: () => HexagonNodeGrid;
+  setGrid: (grid: HexagonNodeGrid) => void;
   onHexClick: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
   onHexEnter?: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
 }
 
 export const Map = (props: MapProps) => {
-  const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
-    props.createGrid()
-  );
   const size = props.hexSize;
   const layout: LayoutDimension = {
     size: { x: size, y: size },
@@ -29,24 +25,24 @@ export const Map = (props: MapProps) => {
     spacing: 1.02,
     origin: { x: 0, y: 0 },
   };
-  const pixel = hexGrid.nodes.map((x) => hexToPixel(x, layout));
+  const pixel = props.grid.nodes.map(x => hexToPixel(x, layout));
 
-  const xMin = Math.min(...pixel.map((p) => p.x));
-  const xMax = Math.max(...pixel.map((p) => p.x));
-  const yMin = Math.min(...pixel.map((p) => p.y));
-  const yMax = Math.max(...pixel.map((p) => p.y));
-  const selectedHex = hexGrid.nodes.find((x) => x.isSelected);
-  const mouseOverHex = hexGrid.nodes.find((x) => x.isMouseOver);
+  const xMin = Math.min(...pixel.map(p => p.x));
+  const xMax = Math.max(...pixel.map(p => p.x));
+  const yMin = Math.min(...pixel.map(p => p.y));
+  const yMax = Math.max(...pixel.map(p => p.y));
+  const selectedHex = props.grid.nodes.find(x => x.isSelected);
+  const mouseOverHex = props.grid.nodes.find(x => x.isMouseOver);
 
   return (
     <HexGrid
-      style={{ display: "flex" }}
+      // style={{ display: "flex" }}
       width={xMax + 2 * size}
       height={yMax + 2 * size}
       viewBox={`${xMin} ${yMin} ${xMax + 2 * size} ${yMax + 2 * size}`}
     >
       <>
-        {hexGrid.nodes.map((hex, index) => {
+        {props.grid.nodes.map((hex, index) => {
           return (
             <Hexagon
               hex={hex}
@@ -73,10 +69,10 @@ export const Map = (props: MapProps) => {
                     : "brightness(70%)"
                   : undefined
               }
-              onClick={() => setHexGrid(props.onHexClick(index, hexGrid))}
+              onClick={() => props.setGrid(props.onHexClick(index, props.grid))}
               onMouseEnter={() => {
                 if (props.onHexEnter !== undefined) {
-                  setHexGrid(props.onHexEnter(index, hexGrid));
+                  props.setGrid(props.onHexEnter(index, props.grid));
                 }
               }}
             >
@@ -126,7 +122,7 @@ export const Map = (props: MapProps) => {
             }}
           />
         )}
-        {hexGrid.nodes.map((hex) => {
+        {props.grid.nodes.map(hex => {
           if (hex.isPath && !hex.isMouseOver && !hex.isSelected) {
             return (
               <Hexagon

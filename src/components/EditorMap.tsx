@@ -7,7 +7,6 @@ import {
 } from "../models/hexagonNodeGrid";
 import { HexNode } from "../models/hexNode";
 import { PULSE } from "../models/maps/central/pulse";
-import { getOrientation } from "../models/orientation";
 import {
   GetTerrain,
   Terrain,
@@ -22,8 +21,8 @@ import {
   UnitType,
   UNIT_TYPES,
 } from "../models/units/unit";
-import { LayoutDimension } from "./Layout";
 import { Map } from "./Map";
+import { TopBar } from "./TopBar";
 
 function createHexGrid(
   x: HexagonNodeGrid,
@@ -33,7 +32,7 @@ function createHexGrid(
 ): HexagonNodeGrid {
   return {
     ...x,
-    nodes: x.nodes.map((x) =>
+    nodes: x.nodes.map(x =>
       x === hex
         ? {
             ...x,
@@ -45,7 +44,11 @@ function createHexGrid(
   };
 }
 
-export function EditorMap() {
+export interface EditorMapProps {
+  toMainMenu: () => void;
+}
+
+export function EditorMap(props: EditorMapProps) {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
     tileMapToHexagonGrid(PULSE)
     // createHexagonGrid(15, 23, Plains)
@@ -103,9 +106,10 @@ export function EditorMap() {
 
   return (
     <>
+      <TopBar toMainMenu={props.toMainMenu} />
       <div>
         <div>
-          {TERRAIN_TYPES.map((x) => (
+          {TERRAIN_TYPES.map(x => (
             <label>
               <input
                 type="radio"
@@ -113,14 +117,14 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={(e) => setSelected(e.target.value as TerrainType)}
+                onChange={e => setSelected(e.target.value as TerrainType)}
               />
               {x}
             </label>
           ))}
         </div>
         <div>
-          {UNIT_TYPES.map((x) => (
+          {UNIT_TYPES.map(x => (
             <label>
               <input
                 type="radio"
@@ -128,7 +132,7 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selected === x}
-                onChange={(e) => setSelected(e.target.value as UnitType)}
+                onChange={e => setSelected(e.target.value as UnitType)}
               />
               {x}
             </label>
@@ -140,13 +144,13 @@ export function EditorMap() {
               id="NoUnit"
               value={undefined}
               checked={selected === undefined}
-              onChange={(e) => setSelected(undefined)}
+              onChange={e => setSelected(undefined)}
             />
             No Unit
           </label>
         </div>
         <div>
-          {COALITIONS.map((x) => (
+          {COALITIONS.map(x => (
             <label>
               <input
                 type="radio"
@@ -154,7 +158,7 @@ export function EditorMap() {
                 id={x}
                 value={x}
                 checked={selectedCoalition === x}
-                onChange={(e) =>
+                onChange={e =>
                   setSelectedCoalition(e.target.value as Coalition)
                 }
               />
@@ -172,7 +176,8 @@ export function EditorMap() {
       </div>
       <Map
         hexSize={25}
-        createGrid={() => tileMapToHexagonGrid(PULSE)}
+        grid={hexGrid}
+        setGrid={setHexGrid}
         onHexClick={onHexClick}
       />
     </>
