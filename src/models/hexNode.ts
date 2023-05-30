@@ -83,6 +83,6 @@ export function createSimpleHexNode(h: HexNode): SimpleHexNode {
     q: h.q,
     r: h.r,
     t: h.terrain?.type,
-    u: h.unit ? { t: h.unit?.kind.type, c: h.unit.coalition } : undefined,
+    u: h.unit ? { t: h.unit?.properties.type, c: h.unit.coalition } : undefined,
   };
 }

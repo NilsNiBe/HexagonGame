@@ -36,7 +36,6 @@ export const useGame = (props: GameStateProps) => {
   });
 
   const nextTurn = () => {
-    game.round;
     const isPlayer1Round = game.round.player.number === "Player1";
 
     setGame({
@@ -52,5 +51,9 @@ export const useGame = (props: GameStateProps) => {
       },
     });
   };
-  return { game, nextTurn };
+
+  const isAttackRound = () => game.round.mode === "Attack";
+  const isMoveRound = () => game.round.mode === "Move";
+
+  return { game, nextTurn, isAttackRound, isMoveRound };
 };

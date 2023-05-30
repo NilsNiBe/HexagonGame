@@ -29,7 +29,7 @@ export function equals(
  * Returns a new Hex with the addition of q,r,s values from A and B respectively
  * @param {HexCoordinates} a - first set of coordinates
  * @param {HexCoordinates} b - second set of coordinates
- * @returns {HexagonTile} - new hex at the position of the sum of the coords
+ * @returns {HexCoordinates} - new hex at the position of the sum of the coords
  */
 export function add(a: HexCoordinates, b: HexCoordinates): HexCoordinates {
   return { q: a.q + b.q, r: a.r + b.r, s: a.s + b.s };
@@ -39,7 +39,7 @@ export function add(a: HexCoordinates, b: HexCoordinates): HexCoordinates {
  * Returns a new Hex with the subtraction of q,r,s values from A and B respectively
  * @param {HexCoordinates} a - first set of coordinates
  * @param {HexCoordinates} b - second set of coordinates
- * @returns {HexagonTile} - new hex at the position of the difference between a and b
+ * @returns {HexCoordinates} - new hex at the position of the difference between a and b
  */
 export function subtract(a: HexCoordinates, b: HexCoordinates): HexCoordinates {
   return { q: a.q - b.q, r: a.r - b.r, s: a.s - b.s };
@@ -48,14 +48,14 @@ export function subtract(a: HexCoordinates, b: HexCoordinates): HexCoordinates {
 /**
  * @param {HexCoordinates} a - first set of coordinates
  * @param {HexCoordinates} k - second set of coordinates
- * @returns {HexagonTile} new hex at the position of the product between a's coordinates and a constant k
+ * @returns {HexCoordinates} new hex at the position of the product between a's coordinates and a constant k
  */
 export function multiply(a: HexCoordinates, k: number): HexCoordinates {
   return { q: a.q * k, r: a.r * k, s: a.s * k };
 }
 
 /**
- * @param {HexagonTile} hex - target hex
+ * @param {HexCoordinates} hex - target hex
  * @returns {number} manhattan distance between hex and origin
  */
 export function lengths(hex: HexCoordinates): number {
@@ -76,7 +76,7 @@ export function distance(a: HexCoordinates, b: HexCoordinates): number {
  * Returns a Hex whos coordinates represent the delta needed to move
  * in the given direction
  * @param {number} direction - number representing the direction
- * @returns {HexagonTile}
+ * @returns {HexCoordinates}
  */
 export function direction(direction: number): HexCoordinates {
   return DIRECTIONS[(6 + (direction % 6)) % 6];
@@ -84,9 +84,9 @@ export function direction(direction: number): HexCoordinates {
 
 /**
  * Returns a Hex which is in the given direction.
- * @param {HexagonTile} hex - starting hex
+ * @param {HexCoordinates} hex - starting hex
  * @param {number} directionNumber - number representing the direction
- * @returns {HexagonTile} Hex which is adjacent in the given direction
+ * @returns {HexCoordinates} Hex which is adjacent in the given direction
  */
 export function neighbor(
   hex: HexCoordinates,
@@ -96,7 +96,7 @@ export function neighbor(
 }
 
 /** Returns an array of all the direct neighbors of a Hex within one Hex away
- * @param {HexagonTile} hex - starting hex
+ * @param {HexCoordinates} hex - starting hex
  * @returns {HexagonTile[]} array containing all adjacent Hexes
  */
 export function neighbors(hex: HexCoordinates): HexCoordinates[] {
@@ -107,11 +107,35 @@ export function neighbors(hex: HexCoordinates): HexCoordinates[] {
   return array;
 }
 
+/** Returns an array of all the Hexes in range
+ * @param {HexCoordinates} hex - starting hex
+ * @returns {HexagonTile[]} array containing all Hexes in range
+ */
+export function hexInRange(
+  hex: HexCoordinates,
+  range: number
+): HexCoordinates[] {
+  const res: HexCoordinates[] = [];
+  for (let q = -range; q <= range; q += 1) {
+    for (
+      let r = Math.max(-range, -q - range);
+      r <= Math.min(range, -q + range);
+      r += 1
+    ) {
+      let s = -q - r;
+      if (q + r + s == 0) {
+        res.push(add(hex, { q, r, s }));
+      }
+    }
+  }
+  return res;
+}
+
 /**
  * rounds the axial coordinate values of a Hex trying to maintain the
  * smallest difference from the current coordinate values.
- * @param {HexagonTile} hex - the hexagon which needs its coordinates rounded
- * @return {HexagonTile} - a Hex which contains the rounded coordinates
+ * @param {HexCoordinates} hex - the hexagon which needs its coordinates rounded
+ * @return {HexCoordinates} - a Hex which contains the rounded coordinates
  */
 export function round(hex: HexCoordinates) {
   let rq = Math.round(hex.q);
@@ -131,7 +155,7 @@ export function round(hex: HexCoordinates) {
 
 /** Given the q,r,s of a hexagon return the x and y pixel coordinates of the
  * hexagon center.
- * @param {HexagonTile} hex - target Hex
+ * @param {HexCoordinates} hex - target Hex
  * @param {LayoutDimensions} layout - layout which contains the Hex
  * @returns {Point} pixel coordinate of the Hex center
  */
@@ -152,7 +176,7 @@ export function hexToPixel(
 /** Return the q,r,s coordinate of the hexagon given pixel point x and y.
  * @param {Point} p - target pixel coordinates
  * @param {LayoutDimension} layout - layout of the desired
- * @returns {HexagonTile} Hex with coordinate position at the
+ * @returns {HexCoordinates} Hex with coordinate position at the
  */
 export function pixelToHex(p: Point, layout: LayoutDimension): HexCoordinates {
   const M = layout.orientation;
@@ -185,7 +209,7 @@ export function lerp(a: number, b: number, t: number): number {
  * @param {HexCoordinates} a - left hand hex
  * @param {HexCoordinates} b - right hand hex
  * @param {number} t - alpha blending value
- * @returns {HexagonTile} new Hex which is between the two Hexes
+ * @returns {HexCoordinates} new Hex which is between the two Hexes
  */
 export function hexLerp(
   a: HexCoordinates,
@@ -204,7 +228,3 @@ export function hexLerp(
 export function getID(hex: HexCoordinates): string {
   return `${hex.q},${hex.r},${hex.s}`;
 }
-
-// static hexToNode(hex: hexagon) : node {
-//   return {f: hex.}
-// }

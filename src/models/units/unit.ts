@@ -1,5 +1,6 @@
-import { DIRECTIONS, add } from "../../services/hexService";
-import { HexCoordinates, getHexKey } from "../hexagonTile";
+import { add, DIRECTIONS } from "../../services/hexService";
+import { HexCoordinates } from "../hexagonTile";
+import { HexNode } from "../hexNode";
 import { TerrainType } from "../terrain/terrain";
 import { Cavalry } from "./ground/calvary";
 import { EliteInfantry } from "./ground/eliteInfantry";
@@ -28,12 +29,15 @@ export const UNIT_ORIENTATION = [
   "South-West",
   "North-West",
 ] as const;
-
 export type UnitOrientation = (typeof UNIT_ORIENTATION)[number];
 
-export interface UnitKind {
-  type: UnitType;
+export const UNIT_KIND = ["ground", "air", "water"] as const;
+export type UnitKind = (typeof UNIT_KIND)[number];
+
+export interface UnitProperties {
   name: string;
+  type: UnitType;
+  kind: UnitKind;
   cost: number;
   ground: Attack;
   water: Attack;
@@ -53,12 +57,13 @@ export interface Attack {
 }
 
 export interface Unit {
-  kind: UnitKind;
+  properties: UnitProperties;
   health: number;
   experience: ExperienceLevel;
   coalition: Coalition;
   orientation: UnitOrientation;
   isDone: boolean;
+  attacked?: HexNode;
 }
 
 export type ExperienceLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -82,9 +87,9 @@ export function GetUnit(type: UnitType) {
   }
 }
 
-export function createUnit(c: Coalition, u: UnitKind): Unit {
+export function createUnit(c: Coalition, u: UnitProperties): Unit {
   return {
-    kind: u,
+    properties: u,
     coalition: c,
     health: u.size,
     experience: 0,

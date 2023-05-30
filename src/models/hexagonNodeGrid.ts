@@ -24,7 +24,7 @@ export function createSimpleHexagonNodeGrid(
   grid: HexagonNodeGrid
 ): SimpleHexNodeGrid {
   return {
-    nodes: grid.nodes.map((x) => createSimpleHexNode(x)),
+    nodes: grid.nodes.map(x => createSimpleHexNode(x)),
   };
 }
 
@@ -34,7 +34,7 @@ function getNeighbors(x: HexNode, hexNodes: HexNode[]) {
   for (let i = 0; i < potentialNeighbors.length; i++) {
     const neighbor = potentialNeighbors[i];
     const hexNodesNeighborIndex = hexNodes.findIndex(
-      (node) => node.q === neighbor.q && node.r === neighbor.r
+      node => node.q === neighbor.q && node.r === neighbor.r
     );
     if (hexNodesNeighborIndex > -1) {
       res.push(hexNodes[hexNodesNeighborIndex]);
@@ -48,7 +48,7 @@ export function createRandomHexagonGrid(
   height: number
 ): HexagonNodeGrid {
   const hexagons = GridGenerator.orientedRectangle(width, height);
-  const hexNodes: HexNode[] = hexagons.map((x) => {
+  const hexNodes: HexNode[] = hexagons.map(x => {
     const terrain = randomTerrain();
     const unit = terrain.cost < Number.MAX_VALUE ? RandomUnit() : undefined;
     return createHexNode(
@@ -57,7 +57,7 @@ export function createRandomHexagonGrid(
       unit ? createUnit("Central", unit) : undefined
     );
   });
-  hexNodes.forEach((x) => (x.neighbors = getNeighbors(x, hexNodes)));
+  hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
 }
 
@@ -67,21 +67,33 @@ export function createHexagonGrid(
   terrain: Terrain
 ): HexagonNodeGrid {
   const hexagons = GridGenerator.orientedRectangle(width, height);
-  const hexNodes: HexNode[] = hexagons.map((x) => {
+  const hexNodes: HexNode[] = hexagons.map(x => {
     return createHexNode(x, terrain);
   });
-  hexNodes.forEach((x) => (x.neighbors = getNeighbors(x, hexNodes)));
+  hexNodes.forEach(x => (x.neighbors = getNeighbors(x, hexNodes)));
   return { nodes: hexNodes };
 }
 
 export function tileMapToHexagonGrid(m: TileMap): HexagonNodeGrid {
-  const nodes = m.nodes.map((x) => {
+  const nodes = m.nodes.map(x => {
     return createHexNodeSimple(
       x,
       GetTerrain(x.t),
       x.u ? createUnit(x.u.c, GetUnit(x.u.t)) : undefined
     );
   });
-  nodes.forEach((x) => (x.neighbors = getNeighbors(x, nodes)));
+  nodes.forEach(x => (x.neighbors = getNeighbors(x, nodes)));
   return { nodes };
+}
+
+export function deselectUnit(grid: HexagonNodeGrid): HexagonNodeGrid {
+  return {
+    ...grid,
+    nodes: grid.nodes.map(x => ({
+      ...x,
+      isReachable: false,
+      isPath: false,
+      isSelected: false,
+    })),
+  };
 }

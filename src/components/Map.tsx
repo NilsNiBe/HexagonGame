@@ -1,6 +1,6 @@
+import React from "react";
 import { COLORS } from "../assets/colors";
 import { HexagonNodeGrid } from "../models/hexagonNodeGrid";
-import { getHexKey } from "../models/hexagonTile";
 import { getOrientation } from "../models/orientation";
 import { hexToPixel } from "../services/hexService";
 import Hexagon from "./Hexagon";
@@ -17,7 +17,11 @@ export interface MapProps {
   onHexEnter?: (index: number, grid: HexagonNodeGrid) => HexagonNodeGrid;
 }
 
-export const Map = (props: MapProps) => {
+export interface MapRef {
+  scrollToItem(index: number): void;
+}
+
+export const Map = React.forwardRef<MapRef, MapProps>((props, ref) => {
   const size = props.hexSize;
   const layout: LayoutDimension = {
     size: { x: size, y: size },
@@ -47,7 +51,7 @@ export const Map = (props: MapProps) => {
             <Hexagon
               hex={hex}
               layout={layout}
-              key={getHexKey(hex)}
+              key={index}
               cellStyle={{
                 fill:
                   hex.terrain?.type === "Water"
@@ -89,7 +93,7 @@ export const Map = (props: MapProps) => {
                 {hex.unit && (
                   <UnitSvg
                     size={size}
-                    type={hex.unit.kind.type}
+                    type={hex.unit.properties.type}
                     coalition={hex.unit.coalition}
                     orientation={hex.unit.orientation}
                     filter={hex.unit.isDone ? "brightness(50%)" : undefined}
@@ -140,4 +144,4 @@ export const Map = (props: MapProps) => {
       </>
     </HexGrid>
   );
-};
+});

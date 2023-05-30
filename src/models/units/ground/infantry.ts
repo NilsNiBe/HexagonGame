@@ -1,8 +1,9 @@
-import { UnitKind } from "../unit";
+import { UnitProperties } from "../unit";
 
-export const Infantry: UnitKind = {
-  type: "Infantry",
+export const Infantry: UnitProperties = {
   name: "Infantry",
+  type: "Infantry",
+  kind: "ground",
   cost: 35,
   ground: { power: 30, range: 1 },
   water: { power: 30, range: 1 },

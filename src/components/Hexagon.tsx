@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import * as React from "react";
-import { COLORS } from "../assets/colors";
-import HexagonTile from "../models/hexagonTile";
+import HexagonTile, { getHexKey } from "../models/hexagonTile";
 import Point from "../models/point";
 import { hexToPixel } from "../services/hexService";
 import { calculateCoordinates, LayoutDimension } from "./Layout";
@@ -102,7 +101,7 @@ export function Hexagon(
   const angle = layout.orientation ? 0 : Math.PI / 6;
   const cornerCoords = calculateCoordinates(layout.size.x, angle);
 
-  const points = cornerCoords.map((point) => `${point.x},${point.y}`).join(" ");
+  const points = cornerCoords.map(point => `${point.x},${point.y}`).join(" ");
 
   return (
     <g
@@ -112,7 +111,7 @@ export function Hexagon(
       })`}
       {...rest}
       {...draggable}
-      onDragStart={(e) => {
+      onDragStart={e => {
         if (onDragStart) {
           const targetProps: TargetProps = {
             hex: hex,
@@ -125,51 +124,51 @@ export function Hexagon(
           onDragStart(e, { data, hex, props });
         }
       }}
-      onDragEnd={(e) => {
+      onDragEnd={e => {
         if (onDragEnd) {
           e.preventDefault();
           const success = e.dataTransfer.dropEffect !== "none";
           onDragEnd(e, { hex, props }, success);
         }
       }}
-      onDrop={(e) => {
+      onDrop={e => {
         if (onDrop) {
           e.preventDefault();
           const target = JSON.parse(e.dataTransfer.getData("hexagon"));
           onDrop(e, { data, hex, props }, target);
         }
       }}
-      onDragOver={(e) => {
+      onDragOver={e => {
         if (onDragOver) {
           onDragOver(e, { data, hex, props });
         }
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={e => {
         if (onMouseEnter) {
           onMouseEnter(e, { data, hex, props });
         }
       }}
-      onClick={(e) => {
+      onClick={e => {
         if (onClick) {
           onClick(e, { data, hex, props });
         }
       }}
-      onMouseOver={(e) => {
+      onMouseOver={e => {
         if (onMouseOver) {
           onMouseOver(e, { data, hex, props });
         }
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={e => {
         if (onMouseLeave) {
           onMouseLeave(e, { data, hex, props });
         }
       }}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.ctrlKey) {
         }
       }}
     >
-      <g className="hexagon">
+      <g className="hexagon" id={getHexKey(props.hex)}>
         <polygon points={points} fill={fillId} style={cellStyleModified} />
         {children}
       </g>

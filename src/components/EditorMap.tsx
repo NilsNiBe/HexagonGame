@@ -73,7 +73,7 @@ export function EditorMap(props: EditorMapProps) {
     } else if (TERRAIN_TYPES.includes(selected as TerrainType)) {
       const terrain = GetTerrain(selected as TerrainType);
       if (hex.unit !== undefined) {
-        if (!hex.unit.kind.terrains.includes(terrain.type)) {
+        if (!hex.unit.properties.terrains.includes(terrain.type)) {
           return createHexGrid(grid, hex, terrain, undefined);
         } else {
           return createHexGrid(grid, hex, terrain, hex.unit);
@@ -85,14 +85,14 @@ export function EditorMap(props: EditorMapProps) {
       const unit = GetUnit(selected as UnitType);
       if (unit.terrains.includes(hex.terrain?.type ?? "Water")) {
         if (
-          hex.unit?.kind === unit &&
+          hex.unit?.properties === unit &&
           hex.unit.coalition === selectedCoalition
         ) {
           return createHexGrid(grid, hex, hex.terrain, undefined);
         } else {
           return createHexGrid(grid, hex, hex.terrain, {
             coalition: selectedCoalition,
-            kind: unit,
+            properties: unit,
             experience: 0,
             health: unit.size,
             orientation: "North",
@@ -168,7 +168,9 @@ export function EditorMap(props: EditorMapProps) {
         </div>
         <button
           onClick={() =>
-            console.log(JSON.stringify(createSimpleHexagonNodeGrid(hexGrid)))
+            navigator.clipboard.writeText(
+              JSON.stringify(createSimpleHexagonNodeGrid(hexGrid).nodes)
+            )
           }
         >
           Print Map to Console

@@ -1,8 +1,9 @@
-import { UnitKind } from "../unit";
+import { UnitProperties } from "../unit";
 
-export const HeavyArtillery: UnitKind = {
-  type: "Heavy-Artillery",
+export const HeavyArtillery: UnitProperties = {
   name: "Heavy Artillery",
+  type: "Heavy-Artillery",
+  kind: "ground",
   cost: 85,
   ground: { power: 70, range: 6 },
   water: { power: 70, range: 6 },

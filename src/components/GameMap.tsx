@@ -2,16 +2,19 @@ import React from "react";
 import "../App.css";
 import { useGame } from "../hooks/useGame";
 import {
+  deselectUnit,
   HexagonNodeGrid,
   tileMapToHexagonGrid,
 } from "../models/hexagonNodeGrid";
+import { getHexKey } from "../models/hexagonTile";
 import { HexNode } from "../models/hexNode";
-import { PULSE } from "../models/maps/central/pulse";
-import { getOrientationFromTo } from "../models/units/unit";
+import { PULSE2 } from "../models/maps/central/pulse";
+import { getOrientationFromTo, Unit, UnitKind } from "../models/units/unit";
 import { runAStar } from "../services/aStarService";
 import { runDijkstra } from "../services/dijkstra";
-import { distance } from "../services/hexService";
-import { Map } from "./Map";
+import { distance, hexInRange } from "../services/hexService";
+import { AttackPopup } from "./AttackPopup";
+import { Map, MapRef } from "./Map";
 import "./terrain/Terrain.css";
 import { TopBar } from "./TopBar";
 
@@ -20,42 +23,38 @@ export interface GameMapProps {
 }
 
 export function GameMap(props: GameMapProps) {
-  const { game, nextTurn } = useGame({
+  const { game, nextTurn, isAttackRound, isMoveRound } = useGame({
     player1: { coalition: "Central", name: "Spieler 1", number: "Player1" },
     player2: { coalition: "Entente", name: "Spieler 2", number: "Player2" },
   });
 
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
-    tileMapToHexagonGrid(PULSE)
+    tileMapToHexagonGrid(PULSE2)
   );
+  const [showAttackPopup, setShowAttackPopup] = React.useState(false);
+
+  const mapRef = React.useRef<MapRef>(null);
 
   const onHexClick = (
     index: number,
     grid: HexagonNodeGrid
   ): HexagonNodeGrid => {
     const hex = grid.nodes[index];
+    // deselect unit
+    if (hex.isSelected) {
+      return deselectUnit(grid);
+    }
+
+    const selectedHex = grid.nodes.find(x => x.isSelected);
+
     if (game.round.mode === "Move") {
+      // no action for enemy units
       if (
         hex.unit !== undefined &&
-        hex.unit?.coalition !== game.round.player.coalition
+        hex.unit.coalition !== game.round.player.coalition
       ) {
         return grid;
       }
-
-      // deselect unit
-      if (hex.isSelected) {
-        hex.isSelected = false;
-        return {
-          ...grid,
-          nodes: grid.nodes.map(x => ({
-            ...x,
-            isReachable: false,
-            isPath: false,
-            isSelected: false,
-          })),
-        };
-      }
-      const selectedHex = grid.nodes.find(x => x.isSelected);
 
       // select unit
       if (
@@ -72,7 +71,7 @@ export function GameMap(props: GameMapProps) {
             n.unit !== undefined && n.unit?.coalition !== hex.unit?.coalition
               ? Number.MAX_VALUE
               : n.weight,
-          hex.unit.kind.speed
+          hex.unit.properties.speed
         );
 
         const reachable = res
@@ -113,76 +112,187 @@ export function GameMap(props: GameMapProps) {
           distance
         );
 
+        return deselectUnit({
+          ...grid,
+          nodes: grid.nodes.map(x =>
+            x.isSelected
+              ? { ...x, unit: undefined }
+              : x.key === hex.key
+              ? {
+                  ...x,
+                  unit: {
+                    ...selectedHex.unit!,
+                    orientation: getOrientationFromTo(path[1], path[0]),
+                    isDone: true,
+                  },
+                }
+              : x
+          ),
+        });
+      }
+    }
+    // Attack
+
+    if (selectedHex === undefined) {
+      // if unit not selected no action for enemy units
+      if (
+        hex.unit !== undefined &&
+        hex.unit.coalition !== game.round.player.coalition
+      ) {
+        return grid;
+      }
+
+      // select unit
+      if (
+        selectedHex === undefined &&
+        !hex.blocked &&
+        hex.unit !== undefined &&
+        !hex.unit.isDone
+      ) {
+        const reachable = reachableUnitsToAttack(grid, hex);
+
         return {
           ...grid,
           nodes: grid.nodes
             .map(x =>
-              x.isSelected
-                ? { ...x, unit: undefined }
-                : x.key === hex.key
-                ? {
-                    ...x,
-                    unit: {
-                      ...selectedHex.unit!,
-                      orientation: getOrientationFromTo(path[1], path[0]),
-                      isDone: true,
-                    },
-                  }
+              reachable.find(r => getHexKey(r) === x.key) !== undefined &&
+              !x.blocked
+                ? { ...x, isReachable: true }
                 : x
             )
-            .map(x => ({
-              ...x,
-              isReachable: false,
-              isPath: false,
-              isSelected: false,
-            })),
+            .map(x => (hex.key === x.key ? { ...x, isSelected: true } : x)),
         };
       }
     } else {
-      // Attack
+      // hex is selected
+      const reachable = reachableUnitsToAttack(grid, selectedHex);
+      if (reachable.find(x => x.key === hex.key) !== undefined) {
+        return deselectUnit({
+          ...grid,
+          nodes: grid.nodes.map(x => ({
+            ...x,
+            unit:
+              selectedHex.key === x.key
+                ? x.unit === undefined
+                  ? undefined
+                  : { ...x.unit, isDone: true, attacked: hex }
+                : x.unit,
+          })),
+        });
+      }
     }
+
     return grid;
   };
+
+  function reachableUnitsToAttack(
+    grid: HexagonNodeGrid,
+    hex: HexNode
+  ): HexNode[] {
+    const reachableUnits = (hex: HexNode, kind: UnitKind): HexNode[] => {
+      const range = (unit: Unit | undefined, kind: UnitKind) => {
+        if (unit === undefined) return 0;
+        return kind === "ground"
+          ? unit.properties.ground.range
+          : kind === "air"
+          ? unit.properties.air.range
+          : kind === "water"
+          ? unit.properties.water.range
+          : 0;
+      };
+
+      return grid.nodes.filter(
+        x =>
+          x.unit !== undefined &&
+          x !== hex &&
+          x.unit.coalition !== game.round.player.coalition &&
+          x.unit.properties.kind === kind &&
+          hexInRange(hex, range(hex.unit, kind)).find(
+            r => getHexKey(r) === x.key
+          ) !== undefined
+      );
+    };
+
+    const reachable = reachableUnits(hex, "ground")
+      .concat(reachableUnits(hex, "air"))
+      .concat(reachableUnits(hex, "water"));
+    return reachable;
+  }
 
   function onHexEnter(index: number, grid: HexagonNodeGrid): HexagonNodeGrid {
     const hex = grid.nodes[index];
 
-    const calcNodes = (): HexNode[] => {
-      if (!hex.isReachable) {
-        return grid.nodes.map(x => ({ ...x, isPath: false }));
-      } else {
-        const selectedHex = grid.nodes.find(x => x.isSelected);
-        if (selectedHex !== undefined && selectedHex.unit !== undefined) {
-          grid.nodes.forEach(x => {
-            x.f = 0;
-            x.g = 0;
-            x.h = undefined;
-            x.predecessor = undefined;
-          });
+    if (game.round.mode === "Move") {
+      const calcNodes = (): HexNode[] => {
+        if (!hex.isReachable) {
+          return grid.nodes.map(x => ({ ...x, isPath: false }));
+        } else {
+          const selectedHex = grid.nodes.find(x => x.isSelected);
+          if (selectedHex !== undefined && selectedHex.unit !== undefined) {
+            grid.nodes.forEach(x => {
+              x.f = 0;
+              x.g = 0;
+              x.h = undefined;
+              x.predecessor = undefined;
+            });
 
-          const path = runAStar(
-            selectedHex,
-            hex,
-            (_, n) =>
-              n.unit !== undefined &&
-              n.unit?.coalition !== selectedHex.unit?.coalition
-                ? Number.MAX_VALUE
-                : n.weight,
-            distance
-          );
-          return grid.nodes.map(x => ({
-            ...x,
-            isPath: path.find(p => p.key === x.key) !== undefined,
-          }));
+            const path = runAStar(
+              selectedHex,
+              hex,
+              (_, n) =>
+                n.unit !== undefined &&
+                n.unit?.coalition !== selectedHex.unit?.coalition
+                  ? Number.MAX_VALUE
+                  : n.weight,
+              distance
+            );
+            return grid.nodes.map(x => ({
+              ...x,
+              isPath: path.find(p => p.key === x.key) !== undefined,
+            }));
+          }
+          return { ...grid.nodes };
         }
-        return { ...grid.nodes };
-      }
-    };
+      };
 
-    return {
-      ...grid,
-      nodes: calcNodes().map(x => ({ ...x, isMouseOver: x.key === hex.key })),
-    };
+      return {
+        ...grid,
+        nodes: calcNodes().map(x => ({ ...x, isMouseOver: x.key === hex.key })),
+      };
+    } else {
+      // Attack
+      return {
+        ...grid,
+        nodes: grid.nodes.map(x => ({ ...x, isMouseOver: x.key === hex.key })),
+      };
+    }
+  }
+
+  function runAttack() {
+    if (isAttackRound()) {
+      handleScrollToItem();
+      setShowAttackPopup(true);
+    }
+  }
+
+  const handleScrollToItem = () => {
+    document
+      .getElementById("q:3,r:-1")
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  function nextTurnAndResetGrid() {
+    nextTurn();
+    setHexGrid({
+      ...hexGrid,
+      nodes: hexGrid.nodes.map(x => ({
+        ...x,
+        unit:
+          x.unit === undefined
+            ? undefined
+            : { ...x.unit, isDone: false, attacked: undefined },
+      })),
+    });
   }
 
   return (
@@ -190,25 +300,30 @@ export function GameMap(props: GameMapProps) {
       <TopBar
         toMainMenu={props.toMainMenu}
         onNextTurn={() => {
-          nextTurn();
-          setHexGrid({
-            ...hexGrid,
-            nodes: hexGrid.nodes.map(x => ({
-              ...x,
-              unit:
-                x.unit === undefined ? undefined : { ...x.unit, isDone: false },
-            })),
-          });
+          runAttack();
+          if (isMoveRound()) {
+            nextTurnAndResetGrid();
+          }
         }}
         round={game.round}
       />
       <Map
         grid={hexGrid}
+        ref={mapRef}
         hexSize={50}
         onHexClick={onHexClick}
         onHexEnter={onHexEnter}
         setGrid={setHexGrid}
       />
+      {showAttackPopup && (
+        <AttackPopup
+          onClose={() => {
+            setShowAttackPopup(false);
+            nextTurnAndResetGrid();
+          }}
+          grid={hexGrid}
+        />
+      )}
     </div>
   );
 }

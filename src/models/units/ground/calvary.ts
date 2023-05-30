@@ -1,8 +1,9 @@
-import { UnitKind } from "../unit";
+import { UnitProperties } from "../unit";
 
-export const Cavalry: UnitKind = {
-  type: "Cavalry",
+export const Cavalry: UnitProperties = {
   name: "Cavalry",
+  type: "Cavalry",
+  kind: "ground",
   cost: 50,
   ground: { power: 33, range: 1 },
   water: { power: 0, range: 0 },
