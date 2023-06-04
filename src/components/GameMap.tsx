@@ -23,9 +23,16 @@ export interface GameMapProps {
 }
 
 export function GameMap(props: GameMapProps) {
-  const { game, nextTurn, isAttackRound, isMoveRound } = useGame({
-    player1: { coalition: "Central", name: "Spieler 1", number: "Player1" },
-    player2: { coalition: "Entente", name: "Spieler 2", number: "Player2" },
+  const {
+    round,
+    nextTurn,
+    isMoveRound,
+    isAttackSelectionRound,
+    isAttackingRound,
+  } = useGame({
+    mode: "OneAfterEachOther",
+    player1: { coalition: "Central", name: "Spieler 1", number: "1" },
+    player2: { coalition: "Entente", name: "Spieler 2", number: "2" },
   });
 
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
@@ -47,11 +54,11 @@ export function GameMap(props: GameMapProps) {
 
     const selectedHex = grid.nodes.find(x => x.isSelected);
 
-    if (game.round.mode === "Move") {
+    if (isMoveRound()) {
       // no action for enemy units
       if (
         hex.unit !== undefined &&
-        hex.unit.coalition !== game.round.player.coalition
+        hex.unit.coalition !== round.player.coalition
       ) {
         return grid;
       }
@@ -137,7 +144,7 @@ export function GameMap(props: GameMapProps) {
       // if unit not selected no action for enemy units
       if (
         hex.unit !== undefined &&
-        hex.unit.coalition !== game.round.player.coalition
+        hex.unit.coalition !== round.player.coalition
       ) {
         return grid;
       }
@@ -205,7 +212,7 @@ export function GameMap(props: GameMapProps) {
         x =>
           x.unit !== undefined &&
           x !== hex &&
-          x.unit.coalition !== game.round.player.coalition &&
+          x.unit.coalition !== round.player.coalition &&
           x.unit.properties.kind === kind &&
           hexInRange(hex, range(hex.unit, kind)).find(
             r => getHexKey(r) === x.key
@@ -222,7 +229,7 @@ export function GameMap(props: GameMapProps) {
   function onHexEnter(index: number, grid: HexagonNodeGrid): HexagonNodeGrid {
     const hex = grid.nodes[index];
 
-    if (game.round.mode === "Move") {
+    if (round.mode === "Move") {
       const calcNodes = (): HexNode[] => {
         if (!hex.isReachable) {
           return grid.nodes.map(x => ({ ...x, isPath: false }));
@@ -269,9 +276,16 @@ export function GameMap(props: GameMapProps) {
   }
 
   function runAttack() {
-    if (isAttackRound()) {
+    if (isAttackSelectionRound()) {
       handleScrollToItem();
       setShowAttackPopup(true);
+    }
+  }
+
+  function OnNextTurn() {
+    nextTurn();
+    if (isMoveRound() || isAttackingRound()) {
+      resetGrid();
     }
   }
 
@@ -295,17 +309,25 @@ export function GameMap(props: GameMapProps) {
     });
   }
 
+  function resetGrid() {
+    setHexGrid({
+      ...hexGrid,
+      nodes: hexGrid.nodes.map(x => ({
+        ...x,
+        unit:
+          x.unit === undefined
+            ? undefined
+            : { ...x.unit, isDone: false, attacked: undefined },
+      })),
+    });
+  }
+
   return (
     <div>
       <TopBar
         toMainMenu={props.toMainMenu}
-        onNextTurn={() => {
-          runAttack();
-          if (isMoveRound()) {
-            nextTurnAndResetGrid();
-          }
-        }}
-        round={game.round}
+        onNextTurn={OnNextTurn}
+        round={round}
       />
       <Map
         grid={hexGrid}
@@ -315,7 +337,7 @@ export function GameMap(props: GameMapProps) {
         onHexEnter={onHexEnter}
         setGrid={setHexGrid}
       />
-      {showAttackPopup && (
+      {isAttackingRound() && (
         <AttackPopup
           onClose={() => {
             setShowAttackPopup(false);
