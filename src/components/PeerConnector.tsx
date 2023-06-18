@@ -1,5 +1,5 @@
 import React from "react";
-import SimplePeer from "vite-compatible-simple-peer";
+import SimplePeer from "simple-peer";
 import { TopBar } from "./TopBar";
 
 export const PeerConnector = (props: {
@@ -61,7 +61,7 @@ export const PeerConnector = (props: {
 
       <label>Your ID:</label>
 
-      <textarea value={myId} />
+      <textarea defaultValue={myId} />
       <label>Other ID:</label>
       <textarea onChange={e => setOtherId(e.target.value)} value={otherId} />
       <button onClick={onConnect}>Connect</button>

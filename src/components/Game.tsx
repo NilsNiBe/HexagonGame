@@ -3,7 +3,7 @@ import { EditorMap } from "./EditorMap";
 import { GameMap } from "./GameMap";
 import { MainMenu } from "./MainMenu";
 import { PeerConnector } from "./PeerConnector";
-import { PeerVideoConnector } from "./PeerVIdeoConnector";
+import { PeerVideoConnector } from "./PeerVideoConnector";
 
 export type Page =
   | "main-menu"

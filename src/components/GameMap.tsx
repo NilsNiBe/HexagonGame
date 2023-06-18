@@ -1,7 +1,3 @@
-import global from "global";
-import * as process from "process";
-(global as any).process = process;
-
 import React from "react";
 import "../App.css";
 import { useGame } from "../hooks/useGame";

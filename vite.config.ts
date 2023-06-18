@@ -8,14 +8,11 @@ export default defineConfig({
   plugins: [svgr(), react()],
   resolve: {
     alias: {
-      //https://github.com/feross/simple-peer/issues/823
-      "readable-stream": "vite-compatible-readable-stream",
+      // https://github.com/feross/simple-peer/issues/883
+      "simple-peer": "simple-peer/simplepeer.min.js",
     },
   },
   build: {
     outDir: "build",
-  },
-  define: {
-    global: "globalThis",
   },
 });
