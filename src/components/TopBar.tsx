@@ -20,8 +20,8 @@ export const TopBar = (props: TopBarProps) => {
       <button onClick={props.toMainMenu}>Main Menu</button>
       {props.round && (
         <>
-          <text style={{ margin: 5 }}>{props.round?.player.name}</text>
-          <text style={{ margin: 5 }}>{props.round?.mode}</text>
+          <span style={{ margin: 5 }}>{props.round?.player.name}</span>
+          <span style={{ margin: 5 }}>{props.round?.mode}</span>
         </>
       )}
       {props.onNextTurn && (

@@ -1,3 +1,7 @@
+import global from "global";
+import * as process from "process";
+(global as any).process = process;
+
 import React from "react";
 import "../App.css";
 import { useGame } from "../hooks/useGame";
@@ -38,7 +42,6 @@ export function GameMap(props: GameMapProps) {
   const [hexGrid, setHexGrid] = React.useState<HexagonNodeGrid>(
     tileMapToHexagonGrid(PULSE2)
   );
-  const [showAttackPopup, setShowAttackPopup] = React.useState(false);
 
   const mapRef = React.useRef<MapRef>(null);
 
@@ -275,13 +278,6 @@ export function GameMap(props: GameMapProps) {
     }
   }
 
-  function runAttack() {
-    if (isAttackSelectionRound()) {
-      handleScrollToItem();
-      setShowAttackPopup(true);
-    }
-  }
-
   function OnNextTurn() {
     nextTurn();
     if (isMoveRound() || isAttackingRound()) {
@@ -340,7 +336,6 @@ export function GameMap(props: GameMapProps) {
       {isAttackingRound() && (
         <AttackPopup
           onClose={() => {
-            setShowAttackPopup(false);
             nextTurnAndResetGrid();
           }}
           grid={hexGrid}

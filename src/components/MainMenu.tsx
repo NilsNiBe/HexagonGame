@@ -20,6 +20,30 @@ export const MainMenu = (props: MainMenuProps) => {
         >
           Editor
         </button>
+        <button
+          className="main-menu-button"
+          onClick={() => props.toPage("host-peer")}
+        >
+          HostPeer
+        </button>
+        <button
+          className="main-menu-button"
+          onClick={() => props.toPage("join-peer")}
+        >
+          JoinPeer
+        </button>
+        <button
+          className="main-menu-button"
+          onClick={() => props.toPage("host-video-peer")}
+        >
+          HostVideoPeer
+        </button>
+        <button
+          className="main-menu-button"
+          onClick={() => props.toPage("join-video-peer")}
+        >
+          JoinVideoPeer
+        </button>
       </div>
     </nav>
   );

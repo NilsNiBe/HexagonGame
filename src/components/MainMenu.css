@@ -1,17 +1,16 @@
 .main-menu {
-    display: flex; 
-    justify-content: center;
-    align-items: center;    
-    height:100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .main-menu-buttons {
-    background-color: darkred;
-    text-align: center;
-    border-radius: 10px;
-    padding: 10px;
+  background-color: darkred;
+  text-align: center;
+  border-radius: 10px;
+  padding: 10px;
 }
 .main-menu-button {
-    background-color: darkgray;
-    width: 90%;    
-    margin: 10px;
+  background-color: darkgray;
+  width: 40%;
+  margin: 5px;
 }

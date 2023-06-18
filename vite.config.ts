@@ -6,7 +6,16 @@ import svgr from "vite-plugin-svgr";
 export default defineConfig({
   base: "/HexagonGame/",
   plugins: [svgr(), react()],
+  resolve: {
+    alias: {
+      //https://github.com/feross/simple-peer/issues/823
+      "readable-stream": "vite-compatible-readable-stream",
+    },
+  },
   build: {
     outDir: "build",
+  },
+  define: {
+    global: "globalThis",
   },
 });
